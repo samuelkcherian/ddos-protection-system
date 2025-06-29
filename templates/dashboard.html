@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>DDoS Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <h1>DDoS Attack Monitoring Dashboard</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>IP Address</th>
+                <th>Packet Count</th>
+                <th>Last Seen</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="trafficTable"></tbody>
+    </table>
+
+    <script>
+        function fetchData() {
+            fetch("/data")
+                .then(res => res.json())
+                .then(data => {
+                    const table = document.getElementById("trafficTable");
+                    table.innerHTML = "";
+                    data.forEach(d => {
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                            <td>${d.ip}</td>
+                            <td>${d.count}</td>
+                            <td>${d.last_seen || ''}</td>
+                            <td class = "${d.status}">${d.status}</td>
+                            <td>${d.status === 'Blocked' ? '<button onclick = "unblockIP(\\'' + d.ip + '\\')">Unblock</button>' : ''
+                    }</td >
+                        `;
+                        table.appendChild(row);
+                    });
+                });
+        }
+        function unblockIP(ip) {
+            fetch("/unblock", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({ ip })
+            }).then(() => fetchData());
+        }
+        setInterval(fetchData, 2000);
+        fetchData();
+    </script>
+</body>
+
+</html>

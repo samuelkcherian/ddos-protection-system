@@ -1,0 +1,67 @@
+# sniffer.py
+from scapy.all import sniff, IP
+from ip_blocker import block_ip, load_blocked_ips
+import time
+import json
+
+packet_threshold = 50  # Number of packets from a single IP to consider suspicious
+time_window = 5        # Time window in seconds to check the threshold
+
+ip_packet_count = {}
+start_time = time.time()
+
+def log_to_dashboard(ip, count, status):
+    try:
+        with open("dashboard_data.json", "r") as f:
+            data = json.load(f)
+    except:
+        data = []
+
+    found = False
+    for entry in data:
+        if entry["ip"] == ip:
+            entry["count"] = count
+            entry["status"] = status
+            found = True
+            break
+
+    if not found:
+        data.append({
+            "ip": ip,
+            "count": count,
+            "status": status
+        })
+
+    with open("dashboard_data.json", "w") as f:
+        json.dump(data, f, indent=4)
+
+def packet_handler(pkt):
+    global ip_packet_count, start_time
+
+    if IP in pkt:
+        src_ip = pkt[IP].src
+        print(f"📦 Packet detected from {src_ip}")  # Debug output
+
+        current_time = time.time()
+
+        # Reset counts if time window has passed
+        if current_time - start_time > time_window:
+            ip_packet_count = {}
+            start_time = current_time
+
+        ip_packet_count[src_ip] = ip_packet_count.get(src_ip, 0) + 1
+
+        if ip_packet_count[src_ip] > packet_threshold:
+            blocked = load_blocked_ips()
+            if src_ip not in blocked:
+                block_ip(src_ip)
+                log_to_dashboard(src_ip, ip_packet_count[src_ip], "Blocked")
+        else:
+            log_to_dashboard(src_ip, ip_packet_count[src_ip], "Blocked")
+
+def start_sniffing():
+    print("🔍 Monitoring all IP traffic...")
+    sniff(iface="eth0", prn=packet_handler, store=0)
+
+if __name__ == "__main__":
+    start_sniffing()

@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+*.log
+blocked_ips.json
+dashboard_data.json
+venv/
