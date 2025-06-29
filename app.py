@@ -12,10 +12,14 @@ USERS_FILE = "users.json"
 
 # Load users
 def load_users():
+    if not os.path.exists(USERS_FILE) or os.stat(USERS_FILE).st_size == 0:
+        print("users.json is missing or empty.")
+        return {}
     try:
         with open(USERS_FILE, "r") as f:
             return json.load(f)
-    except FileNotFoundError:
+    except json.JSONDecodeError:
+        print("users.json is corrupted or has invalid JSON.")
         return {}
 # Save users
 def save_users(users):
