@@ -2,6 +2,7 @@ from flask import Flask, render_template, jsonify, request, redirect, url_for, s
 from werkzeug.security import generate_password_hash, check_password_hash
 import threading
 import json
+import os
 from sniffer import start_sniffing
 from ip_blocker import unblock_expired_ips
 
@@ -83,4 +84,5 @@ def run_sniffer():
         start_sniffing()
 
 if __name__ == "__main__":
-    app.run()
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
