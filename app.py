@@ -156,7 +156,10 @@ def monitor_domain():
 
     for entry in dashboard:
         if entry["ip"] == resolved_ip:
-            return jsonify({"message": "Already monitoring this domain's IP"}), 200
+            return jsonify({
+                "message": "Already monitoring this domain's IP",
+                "ip": resolved_ip
+            }), 200
         
     dashboard.append({
         "ip": resolved_ip,
@@ -168,7 +171,10 @@ def monitor_domain():
     with open("dashboard_data.json", "w") as f:
         json.dump(dashboard, f, indent=4)
 
-    return jsonify({"message": f"Monitoring domain {domain} at IP {resolved_ip}"}),200
+    return jsonify({
+        "message": f"Monitoring domain {domain} at IP {resolved_ip}",
+        "ip": resolved_ip
+    }),200
 
 #def run_sniffer():
 #    while True:
