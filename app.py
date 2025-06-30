@@ -136,7 +136,7 @@ def unblock():
         json.dump(dashboard, f, indent=4)
     return "", 204
 
-@app.route("/monitor_domain", methods=["POST"])
+@app.route("/monitor", methods=["POST"])
 def monitor_domain():
     data = request.get_json()
     domain = data.get("domain")
