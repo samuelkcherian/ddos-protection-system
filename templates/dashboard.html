@@ -72,7 +72,8 @@
                             <td>${d.packet_count || '0'}</td>
                             <td>${d.last_seen || ''}</td>
                             <td class="${d.status.toLowerCase()}">${d.status}</td>
-                            <td>${d.status === 'Blocked' ? `<button onclick="unblockIP(\\'' + d.ip + '\\')">Unblock</button>` : ''}</td >
+                            <td>${d.status === 'Blocked' ? `<button onclick="unblockIP('${d.ip}')">Unblock</button>` : ''}</td>
+
                     `;
                         table.appendChild(row);
                     });

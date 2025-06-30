@@ -8,8 +8,12 @@ def block_ip(ip):
     _record(ip)
 
 def unblock_ip(ip):
-    subprocess.call(["iptables", "-D", "INPUT", "-s", ip, "-j", "DROP"])
-    _remove(ip)
+    blocked_ips = load_blocked_ips()
+    if ip in blocked_ips:
+        del blocked_ips[ip]
+        save_blocked_ips(blocked_ips)
+        os.system(f"iptables -D INPUT -s {ip} -j DROP")
+
 
 def _record(ip):
     blocked = _load_raw()

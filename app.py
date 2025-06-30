@@ -129,7 +129,7 @@ def unblock():
 
     for entry in dashboard:
         if entry["ip"] == ip:
-            entry["status"] = "Safe"
+            entry["status"] = "Unblocked"
             break
     with open("dashboard_data.json", "w") as f:
         json.dump(dashboard, f, indent=4)
