@@ -35,8 +35,8 @@
                             <td>${d.packet_count}</td>
                             <td>${d.last_seen || ''}</td>
                             <td class = "${d.status}">${d.status}</td>
-                            <td>${d.status === 'Blocked' ? '<button onclick = "unblockIP(\\'' + d.ip + '\\')">Unblock</button>' : ''
-                    }</td >
+                            <td>${d.status === 'Blocked' ? '<button onclick = "unblockIP(\'' + d.ip + '\')">Unblock</button>' : ''
+                            }</td >
                         `;
                         table.appendChild(row);
                     });
@@ -45,7 +45,7 @@
         function unblockIP(ip) {
             fetch("/unblock", {
                 method: "POST",
-                headers: {"Content-Type": "application/json"},
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ ip })
             }).then(() => fetchData());
         }
