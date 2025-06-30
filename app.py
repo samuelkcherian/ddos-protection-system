@@ -92,17 +92,18 @@ def log_data():
     try:
         with open("dashboard_data.json", "r") as f:
             dashboard = json.load(f)
-    except FileNotFoundError:
+    except:
         dashboard = []
-
+    found = False
     for entry in dashboard:
         if entry["ip"] == ip:
             entry["packet_count"] = count
             entry["last_seen"] = last_seen
             entry["status"] = status
+            found = True
             break
 
-    else:
+    if not found:
         dashboard.append({
             "ip": ip,
             "packet_count": count,

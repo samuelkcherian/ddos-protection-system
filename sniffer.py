@@ -12,7 +12,7 @@ time_window = 5        # Time window in seconds to check the threshold
 ip_packet_count = {}
 start_time = time.time()
 
-def report_to_dashboard(ip, packet_count):
+def report_to_dashboard(ip, packet_count, status="Blocked"):
     try:
         response = requests.post("https://ddos-protection-system-6qob.onrender.com/api/log", json={
             "ip": ip,
