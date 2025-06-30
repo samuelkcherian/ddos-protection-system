@@ -87,7 +87,7 @@ def log_data():
         last_seen = data.get("last_seen", datetime.utcnow().isoformat())
         status = data.get("status", "blocked")
     except KeyError:
-        return abort(400, desscription="Missing keys in JSON.")
+        return abort(400, description="Missing keys in JSON.")
     
     try:
         with open("dashboard_data.json", "r") as f:

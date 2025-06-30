@@ -2,7 +2,7 @@
 from scapy.all import sniff, IP
 from ip_blocker import block_ip, load_blocked_ips
 import requests
-from datetime import datetime
+from datetime import datetime, timezone
 import time
 import json
 
@@ -12,42 +12,15 @@ time_window = 5        # Time window in seconds to check the threshold
 ip_packet_count = {}
 start_time = time.time()
 
-def log_to_dashboard(ip, count, status):
-    try:
-        with open("dashboard_data.json", "r") as f:
-            data = json.load(f)
-    except:
-        data = []
-
-    found = False
-    for entry in data:
-        if entry["ip"] == ip:
-            entry["count"] = count
-            entry["status"] = status
-            entry["last_seen"] = datetime.utcnow().isoformat()
-            found = True
-            break
-
-    if not found:
-        data.append({
-            "ip": ip,
-            "count": count,
-            "status": status,
-            "last_seen": datetime.utcnow().isoformat()
-        })
-
-    with open("dashboard_data.json", "w") as f:
-        json.dump(data, f, indent=4)
-
 def report_to_dashboard(ip, packet_count):
     try:
         response = requests.post("https://ddos-protection-system-6qob.onrender.com/api/log", json={
             "ip": ip,
             "packet_count": packet_count,
-            "last_seen": datetime.utcnow().isoformat(),
-            "status": "blocked"
+            "last_seen": datetime.now(timezone.utc).isoformat(),
+            "status": status
         })
-        if response.status_code == 200:
+        if response.status_code == 204:
             print(f"✅ Reported {ip} to live dashboard")
         else:
             print(f"⚠️ Failed to report {ip} - {response.status_code}: {response.text}")
@@ -74,10 +47,9 @@ def packet_handler(pkt):
             blocked = load_blocked_ips()
             if src_ip not in blocked:
                 block_ip(src_ip)
-                log_to_dashboard(src_ip, ip_packet_count[src_ip], "Blocked")
-                report_to_dashboard(src_ip, ip_packet_count[src_ip])
+                report_to_dashboard(src_ip, ip_packet_count[src_ip], "Blocked")
         else:
-            log_to_dashboard(src_ip, ip_packet_count[src_ip], "Blocked")
+            report_to_dashboard(src_ip, ip_packet_count[src_ip], "Safe")
 
 def start_sniffing():
     print("🔍 Monitoring all IP traffic...")
