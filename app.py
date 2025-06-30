@@ -198,7 +198,7 @@ def analyze_traffic():
             timestamps = entry.get("timestamps", [])
             parsed_times = [datetime.fromisoformat(ts) for ts in timestamps]
 
-            recent = [ts for ts in parsed_times if now = ts <= timedelta(seconds=5)]
+            recent = [ts for ts in parsed_times if now - ts <= timedelta(seconds=5)]
 
             if len(recent) >= 10:
                 if entry["status"] != "Suspicious":
