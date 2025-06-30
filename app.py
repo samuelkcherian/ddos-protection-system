@@ -1,6 +1,6 @@
 from flask import Flask, render_template, jsonify, request, redirect, url_for, session, abort
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import threading
 import json
 import os
@@ -101,14 +101,20 @@ def log_data():
             entry["packet_count"] = count
             entry["last_seen"] = last_seen
             entry["status"] = status
+            if "timestamps" not in entry:
+                entry["timestamps"] = []
+            entry["timestamps"].append(last_seen)
+            entry["timestamps"] = entry["timestamps"][-100:]
             break
+            
 
     else:
         dashboard.append({
             "ip": ip,
             "packet_count": count,
             "last_seen": last_seen,
-            "status": status
+            "status": status,
+            "timestamps": [last_seen]
         })
 
     with open("dashboard_data.json", "w") as f:
@@ -177,12 +183,41 @@ def monitor_domain():
         "ip": resolved_ip
     }),200
 
+def analyze_traffic():
+    while True:
+        try:
+            with open("dashboard_data.json", "r") as f:
+                dashboard = json.load(f)
+        except FileNotFoundError:
+            dashboard = []
+
+        updated = False
+        now = datetime.now(timezone.utc)
+
+        for entry in dashboard:
+            timestamps = entry.get("timestamps", [])
+            parsed_times = [datetime.fromisoformat(ts) for ts in timestamps]
+
+            recent = [ts for ts in parsed_times if now = ts <= timedelta(seconds=5)]
+
+            if len(recent) >= 10:
+                if entry["status"] != "Suspicious":
+                    entry["status"] = "Suspicious"
+                    print(f"⚠️ Suspicious activity detected from {entry['ip']}")
+                    updated = True
+
+        if updated:
+            with open("dashboard_data.json", "w") as f:
+                json.dump(dashboard, f, indent=4)
+
+        time.sleep(5)
 #def run_sniffer():
 #    while True:
  #       unblock_expired_ips()
  #       start_sniffing()
 
-#threading.Thread(target=run_sniffer, daemon=True).start()
+threading.Thread(target=analyze_traffic, daemon=True).start()
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
