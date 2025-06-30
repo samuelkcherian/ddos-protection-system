@@ -32,7 +32,7 @@
                         const row = document.createElement("tr");
                         row.innerHTML = `
                             <td>${d.ip}</td>
-                            <td>${d.count}</td>
+                            <td>${d.packet_count}</td>
                             <td>${d.last_seen || ''}</td>
                             <td class = "${d.status}">${d.status}</td>
                             <td>${d.status === 'Blocked' ? '<button onclick = "unblockIP(\\'' + d.ip + '\\')">Unblock</button>' : ''
