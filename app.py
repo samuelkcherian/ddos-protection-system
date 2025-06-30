@@ -138,7 +138,7 @@ def unblock():
 
 @app.route("/monitor_domain", methods=["POST"])
 def monitor_domain():
-    domain = request.get_json()
+    data = request.get_json()
     domain = data.get("domain")
     if not domain:
         return jsonify({"error": "No domain provided"}), 400
