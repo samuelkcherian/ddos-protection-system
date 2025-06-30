@@ -121,6 +121,19 @@ def unblock():
     from ip_blocker import unblock_ip
     ip = request.json.get("ip")
     unblock_ip(ip)
+
+    try:
+        with open("dashboard_data.json", "r") as f:
+            dashboard = json.load(f)
+    except FileNotFoundError:
+        dashboard = []
+
+    for entry in dashboard:
+        if entry["ip"] == ip:
+            entry["status"] = "Safe"
+            break
+    with open("dashboard_data.json", "w") as f:
+        json.dump(dashboard, f, indent=4)
     return "", 204
 
 def run_sniffer():
