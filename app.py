@@ -1,5 +1,6 @@
-from flask import Flask, render_template, jsonify, request, redirect, url_for, session
+from flask import Flask, render_template, jsonify, request, redirect, url_for, session, abort
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
 import threading
 import json
 import os
@@ -75,6 +76,45 @@ def data():
     except:
         return jsonify([])
     
+@app.route("/api/log", methods=["POST"])
+def log_data():
+    if not request.is_json:
+        return abort(400, description="Invalid data format.")
+    data = request.get_json()
+    try:
+        ip = data["ip"]
+        count = data["packet_count"]
+        last_seen = data.get("last_seen", datetime.utcnow().isoformat())
+        status = data.get("status", "blocked")
+    except KeyError:
+        return abort(400, desscription="Missing keys in JSON.")
+    
+    try:
+        with open("dashboard_data.json", "r") as f:
+            dashboard = json.load(f)
+    except FileNotFoundError:
+        dashboard = []
+
+    for entry in dashboard:
+        if entry["ip"] == ip:
+            entry["packet_count"] = count
+            entry["last_seen"] = last_seen
+            entry["status"] = status
+            break
+
+    else:
+        dashboard.append({
+            "ip": ip,
+            "packet_count": count,
+            "last_seen": last_seen
+            "status": status
+        })
+
+    with open("dashboard_data.json", "w") as f:
+        json.dump(dashboard, f, indent=4)
+
+    return "", 204
+    
 @app.route("/unblock", methods=["POST"])
 def unblock():
     from ip_blocker import unblock_ip
@@ -87,6 +127,7 @@ def run_sniffer():
         unblock_expired_ips()
         start_sniffing()
 
+threading.Thread(target=run_sniffer, daemon=True).start()
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)

@@ -1,6 +1,8 @@
 # sniffer.py
 from scapy.all import sniff, IP
 from ip_blocker import block_ip, load_blocked_ips
+import requests
+from datetime import datetime
 import time
 import json
 
@@ -34,6 +36,21 @@ def log_to_dashboard(ip, count, status):
 
     with open("dashboard_data.json", "w") as f:
         json.dump(data, f, indent=4)
+
+def report_to_dashboard(ip, packet_count):
+    try:
+        response = requests.post("https://ddos-protection-system-6qob.onrender.com/api/log", json={
+            "ip": ip,
+            "packet_count": packet_count,
+            "last_seen": datetime.utcnow().isoformat(),
+            "status": "blocked"
+        })
+        if response.status_code == 200:
+            print(f"✅ Reported {ip} to live dashboard")
+        else:
+            print(f"⚠️ Failed to report {ip} - {response.status_code}: {response.text}")
+    except Exception as e:
+        print(f"❌ Exception during reporting: {e}")
 
 def packet_handler(pkt):
     global ip_packet_count, start_time
