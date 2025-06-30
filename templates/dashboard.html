@@ -108,34 +108,34 @@
             setTimeout(() => trail.remove(), 500);
         });
 
-
-        <script>
-            function monitorDomain() {
-                const domainInput = document.getElementById("domainInput").value;
+    </script>
+    <script>
+        function monitorDomain() {
+            const domainInput = document.getElementById("domainInput").value;
             if (!domainInput) return alert("Please enter a domain name");
 
             fetch("/monitor", {
                 method: "POST",
-            headers: {"Content-Type": "application/json" },
-            body: JSON.stringify({domain: domainInput })
-                })
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ domain: domainInput })
+            })
                 .then(res => res.json())
                 .then(data => {
                     if (data.error) {
-                alert("❌ " + data.error);
+                        alert("❌ " + data.error);
                     } else {
-                alert(`✅ Domain resolved to IP: ${data.ip}`);
-            fetchData();  // Refresh dashboard data
+                        alert(`✅ Domain resolved to IP: ${data.ip}`);
+                        fetchData();  // Refresh dashboard data
                     }
-        })
-        .catch(err => {
-                console.error("Error monitoring domain:", err);
-            alert("⚠️ Error sending domain for monitoring");
-        });
-    }
+                })
+                .catch(err => {
+                    console.error("Error monitoring domain:", err);
+                    alert("⚠️ Error sending domain for monitoring");
+                });
+        }
     </script>
 
-    </script>
+
 </body>
 
 </html>
