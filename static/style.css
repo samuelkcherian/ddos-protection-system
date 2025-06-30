@@ -32,6 +32,44 @@ body {
     color: #ffffff;
 }
 
+.profile-dropdown {
+    position: absolute;
+    top: 15px;
+    right: 25px;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+.profile-icon {
+    cursor: pointer;
+    font-size: 24px;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: #222;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.profile-dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown-content a {
+    display: block;
+    padding: 6px;
+    color: white;
+    text-decoration: none;
+}
+
+.dropdown-content a:hover {
+    background-color: #444;
+}
+
 .table-container {
     margin: 40px auto;
     width: 90%;

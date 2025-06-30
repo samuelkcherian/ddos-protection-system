@@ -5,9 +5,39 @@
     <meta charset="UTF-8">
     <title>DDoS Monitoring Tool</title>
     <link rel="stylesheet" href="/static/style.css">
+    <style>
+        body {
+            cursor: none;
+            overflow: hidden;
+        }
+
+        .trail {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 0, 255, 0.8) 0%, transparent 70%);
+            pointer-events: none;
+            animation: fadeOut 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: scale(2);
+            }
+        }
+    </style>
 </head>
 
 <body>
+    <div class="profile-dropdown">
+        <div class="profile-icon">👤</div>
+        <div class="dropdown-content">
+            <a href="#">Settings</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </div>
     <div class="navbar">
         <div class="title">DDoS Monitoring Tool</div>
         <div class="profile-icon">👤</div>
@@ -44,7 +74,7 @@
                             <td class="${d.status.toLowerCase()}">${d.status}</td>
                             <td>${d.status === 'Blocked' ? '<button onclick="unblockIP(\\'' + d.ip + '\\')">Unblock</button>' : ''
                     }</td >
-                        `;
+                    `;
                         table.appendChild(row);
                     });
                 });
@@ -60,6 +90,18 @@
 
         setInterval(fetchData, 2000);
         fetchData();
+
+    </script>
+
+    <script>
+        document.addEventListener("mousemove", e => {
+            const trail = document.createElement("div");
+            trail.className = "trail";
+            trail.style.left = `${ e.clientX }px`;
+            trail.style.top = `${ e.clientY }px`;
+            document.body.appendChild(trail);
+            setTimeout(() => trail.remove(), 500);
+        });
     </script>
 </body>
 
