@@ -80,6 +80,37 @@ body {
     box-shadow: 0 0 15px #b84dff;
 }
 
+.domain-monitor-container {
+    text-align: center;
+    margin: 20px auto;
+}
+
+.domain-monitor-container input {
+    padding: 10px;
+    width: 300px;
+    border: 2px solid #a64ac9;
+    border-radius: 8px;
+    background-color: #1e1e2f;
+    color: white;
+    font-size: 16px;
+}
+
+.domain-monitor-container button {
+    padding: 10px 20px;
+    margin-left: 10px;
+    border: none;
+    border-radius: 8px;
+    background-color: #a64ac9;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.domain-monitor-container button:hover {
+    background-color: #d66bff
+}
+
 table {
     width: 100%;
     border-collapse: collapse;

@@ -43,6 +43,11 @@
         <div class="profile-icon">👤</div>
     </div>
 
+    <div class="domain-monitor-container">
+        <input type="text" id="domainInput" placeholder="Enter domain (e.g., example.com)">
+        <button onclick="monitorDomain()">Monitor Domain</button>
+    </div>
+
     <div class="table-container">
         <table>
             <thead>
@@ -102,6 +107,25 @@
             document.body.appendChild(trail);
             setTimeout(() => trail.remove(), 500);
         });
+
+        function monitorDomain() {
+            const domain = document.getElementById("domainInput").value;
+            if (!domain) return alert("Please enter a domain name");
+
+            fetch("/monitor_domain", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ domain })
+            })
+                .then(res => {
+                    if (res.ok) {
+                        alert(`✅ Now monitoring ${domain}`);
+                        fetchData();
+                    } else {
+                        alert("⚠️ Failed to monitor domain");
+                    }
+                });
+        }
     </script>
 </body>
 
