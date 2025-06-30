@@ -1,6 +1,6 @@
 from flask import Flask, render_template, jsonify, request, redirect, url_for, session, abort
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
+from datetime import datetime, timezone
 import threading
 import json
 import os
@@ -171,6 +171,7 @@ def monitor_domain():
     with open("dashboard_data.json", "w") as f:
         json.dump(dashboard, f, indent=4)
 
+    print(f"[INFO] Domain '{domain}' resolved to '{resolved_ip}' and added to dashboard.")
     return jsonify({
         "message": f"Monitoring domain {domain} at IP {resolved_ip}",
         "ip": resolved_ip
