@@ -72,8 +72,7 @@
                             <td>${d.packet_count || '0'}</td>
                             <td>${d.last_seen || ''}</td>
                             <td class="${d.status.toLowerCase()}">${d.status}</td>
-                            <td>${d.status === 'Blocked' ? '<button onclick="unblockIP(\\'' + d.ip + '\\')">Unblock</button>' : ''
-                    }</td >
+                            <td>${d.status === 'Blocked' ? `<button onclick="unblockIP(\\'' + d.ip + '\\')">Unblock</button>` : ''}</td >
                     `;
                         table.appendChild(row);
                     });
@@ -97,8 +96,8 @@
         document.addEventListener("mousemove", e => {
             const trail = document.createElement("div");
             trail.className = "trail";
-            trail.style.left = `${ e.clientX }px`;
-            trail.style.top = `${ e.clientY }px`;
+            trail.style.left = `${e.clientX}px`;
+            trail.style.top = `${e.clientY}px`;
             document.body.appendChild(trail);
             setTimeout(() => trail.remove(), 500);
         });
