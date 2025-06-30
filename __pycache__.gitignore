@@ -4,3 +4,4 @@ __pycache__/
 blocked_ips.json
 dashboard_data.json
 venv/
+alembic==1.13.1
