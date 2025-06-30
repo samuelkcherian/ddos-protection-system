@@ -4,6 +4,7 @@ from datetime import datetime
 import threading
 import json
 import os
+import socket
 #from sniffer import start_sniffing
 from ip_blocker import unblock_expired_ips
 
@@ -134,6 +135,40 @@ def unblock():
     with open("dashboard_data.json", "w") as f:
         json.dump(dashboard, f, indent=4)
     return "", 204
+
+@app.route("/monitor_domain", methods=["POST"])
+def monitor_domain():
+    domain = request.get_json()
+    domain = data.get("domain")
+    if not domain:
+        return jsonify({"error": "No domain provided"}), 400
+    try:
+        resolved_ip = socket.gethostbyname(domain)
+        print(f"🌐 Domain {domain} resolved to IP {resolved_ip}")
+    except socket.gaierror:
+        return jsonify({"error": "Failed to resolve domain"}), 400
+    
+    try:
+        with open("dashboard_data.json", "r") as f:
+            dashboard = json.load(f)
+    except FileNotFoundError:
+        dashboard = []
+
+    for entry in dashboard:
+        if entry["ip"] == resolved_ip:
+            return jsonify({"message": "Already monitoring this domain's IP"}), 200
+        
+    dashboard.append({
+        "ip": resolved_ip,
+        "packet_count": 0,
+        "last_seen": datetime.now(timezone.utc).isoformat(),
+        "status": "Monitoring"
+    })
+
+    with open("dashboard_data.json", "w") as f:
+        json.dump(dashboard, f, indent=4)
+
+    return jsonify({"message": f"Monitoring domain {domain} at IP {resolved_ip}"}),200
 
 #def run_sniffer():
 #    while True:
