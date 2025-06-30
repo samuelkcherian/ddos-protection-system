@@ -4,7 +4,7 @@ from datetime import datetime
 import threading
 import json
 import os
-from sniffer import start_sniffing
+#from sniffer import start_sniffing
 from ip_blocker import unblock_expired_ips
 
 app = Flask(__name__)
@@ -136,12 +136,12 @@ def unblock():
         json.dump(dashboard, f, indent=4)
     return "", 204
 
-def run_sniffer():
-    while True:
-        unblock_expired_ips()
-        start_sniffing()
+#def run_sniffer():
+#    while True:
+ #       unblock_expired_ips()
+ #       start_sniffing()
 
-threading.Thread(target=run_sniffer, daemon=True).start()
+#threading.Thread(target=run_sniffer, daemon=True).start()
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
