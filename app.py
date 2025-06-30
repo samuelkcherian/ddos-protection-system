@@ -85,25 +85,24 @@ def log_data():
         ip = data["ip"]
         count = data["packet_count"]
         last_seen = data.get("last_seen", datetime.utcnow().isoformat())
-        status = data.get("status", "blocked")
-    except KeyError:
-        return abort(400, description="Missing keys in JSON.")
+        status = data.get("status", "Blocked")
+    except KeyError as e:
+        return abort(400, description="Missing keys: {str(e)}")
     
     try:
         with open("dashboard_data.json", "r") as f:
             dashboard = json.load(f)
-    except:
+    except FileNotFoundError:
         dashboard = []
-    found = False
+
     for entry in dashboard:
         if entry["ip"] == ip:
             entry["packet_count"] = count
             entry["last_seen"] = last_seen
             entry["status"] = status
-            found = True
             break
 
-    if not found:
+    else:
         dashboard.append({
             "ip": ip,
             "packet_count": count,
