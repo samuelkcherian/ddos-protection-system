@@ -106,7 +106,7 @@ def log_data():
         dashboard.append({
             "ip": ip,
             "packet_count": count,
-            "last_seen": last_seen
+            "last_seen": last_seen,
             "status": status
         })
 

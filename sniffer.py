@@ -24,6 +24,7 @@ def log_to_dashboard(ip, count, status):
         if entry["ip"] == ip:
             entry["count"] = count
             entry["status"] = status
+            entry["last_seen"] = datetime.utcnow().isoformat()
             found = True
             break
 
@@ -31,7 +32,8 @@ def log_to_dashboard(ip, count, status):
         data.append({
             "ip": ip,
             "count": count,
-            "status": status
+            "status": status,
+            "last_seen": datetime.utcnow().isoformat()
         })
 
     with open("dashboard_data.json", "w") as f:
@@ -73,6 +75,7 @@ def packet_handler(pkt):
             if src_ip not in blocked:
                 block_ip(src_ip)
                 log_to_dashboard(src_ip, ip_packet_count[src_ip], "Blocked")
+                report_to_dashboard(src_ip, ip_packet_count[src_ip])
         else:
             log_to_dashboard(src_ip, ip_packet_count[src_ip], "Blocked")
 
