@@ -24,8 +24,8 @@ body {
 
 .sidebar {
     width: 230px;
-    background-color: var(sidebar-bg);
-    color: var(text-light);
+    background-color: #101935;
+    color: var(--text-light);
     padding: 20px;
 }
 
@@ -36,7 +36,7 @@ body {
 
 .sidebar a {
     display: block;
-    color: var(text-light);
+    color: var(--text-light);
     text-decoration: none;
     margin: 10px 0;
     padding: 10px;
@@ -45,7 +45,7 @@ body {
 
 .sidebar a:hover,
 .sidebar a.active {
-    background-color: var(primary);
+    background-color: var(--primary);
 }
 
 .main {
@@ -71,7 +71,7 @@ body {
 .dashboard-title {
     font-size: 24px;
     font-weight: 700;
-    color: var(dark-bg);
+    color: var(--dark-bg);
 }
 
 .cards {
@@ -82,7 +82,7 @@ body {
 }
 
 .card {
-    background-color: var(card-bg);
+    background-color: var(--card-bg);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
     border-radius: 10px;
     padding: 20px;
@@ -92,7 +92,7 @@ body {
 
 .card h4 {
     margin: 0;
-    color: var(text-muted);
+    color: var(--text-muted);
     font-size: 14px;
 }
 
@@ -118,7 +118,7 @@ td {
 }
 
 th {
-    background-color: var(primary);
+    background-color: var(--primary);
 }
 
 tr:nth-child(even) {
@@ -126,17 +126,17 @@ tr:nth-child(even) {
 }
 
 .status-safe {
-    color: var(status-safe);
+    color: var(--status-safe);
     font-weight: bold;
 }
 
 .status-blocked {
-    color: var(status-blocked);
+    color: var(--status-blocked);
     font-weight: bold;
 }
 
 .status-suspicious {
-    color: var(status-suspicious);
+    color: var(--status-suspicious);
     font-weight: bold;
 }
 
