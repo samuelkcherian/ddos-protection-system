@@ -89,7 +89,7 @@ def log_data():
         last_seen = data.get("last_seen", datetime.utcnow().isoformat())
         status = data.get("status", "Blocked")
     except KeyError as e:
-        return abort(400, description="Missing keys: {str(e)}")
+        return abort(400, description=f"Missing key: {str(e)}")
     
     try:
         with open("dashboard_data.json", "r") as f:
@@ -97,25 +97,30 @@ def log_data():
     except FileNotFoundError:
         dashboard = []
 
+    now = datetime.now(timezone.utc).isoformat()
+    updated = False
+
     for entry in dashboard:
         if entry["ip"] == ip:
             entry["packet_count"] = count
             entry["last_seen"] = last_seen
             entry["status"] = status
+            
             if "timestamps" not in entry:
                 entry["timestamps"] = []
-            entry["timestamps"].append(last_seen)
-            entry["timestamps"] = entry["timestamps"][-100:]
+            entry["timestamps"].append(now)
+            entry["timestamps"] = entry["timestamps"][-20:]
+            updated = True
             break
             
 
-    else:
+    if not updated:
         dashboard.append({
             "ip": ip,
             "packet_count": count,
             "last_seen": last_seen,
             "status": status,
-            "timestamps": [last_seen]
+            "timestamps": [now]
         })
 
     with open("dashboard_data.json", "w") as f:
