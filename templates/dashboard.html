@@ -99,7 +99,9 @@
                             <td class="px-4 py-2">${ip}</td>
                             <td class="px-4 py-2">${count}</td>
                             <td class="px-4 py-2">${lastSeen}</td>
-                            <td class="px-4 py-2 ${statusClass} rounded">${status}</td>
+                            <td class="px-4 py-2"> 
+                                <span class="${statusClass} px-2 py-1 rounded transition duration-300">${status}</span>
+                            </td>
                             <td class="px-4 py-2 ${scoreClass}">${score}</td>
                             <td class="px-4 py-2">
                                 ${status === "Blocked" ? `
