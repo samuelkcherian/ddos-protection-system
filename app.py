@@ -84,7 +84,7 @@ def log_data():
         return abort(400, description="Invalid data format.")
     data = request.get_json()
     print(f"📥 Incoming log data: {request.get_json()}")
-    
+
     try:
         ip = data["ip"]
         count = data["packet_count"]
@@ -101,6 +101,8 @@ def log_data():
 
     now = data.get("timestamp", datetime.now(timezone.utc).isoformat())
     updated = False
+    path = os.path.abspath("dashboard_data.json")
+    print(f"[DEBUG] Writing to: {path}")
 
     for entry in dashboard:
         if entry["ip"] == ip:
@@ -124,6 +126,9 @@ def log_data():
             "status": status,
             "timestamps": [now]
         })
+
+    print(f"[DEBUG] File exists? {os.path.exists(path)}")
+    print(f"[DEBUG] Writable? {os.access(path, os.W_OK)}")
 
     print(f"[DEBUG] Received log for IP {ip} with timestamp: {now}")    
 
