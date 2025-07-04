@@ -88,11 +88,11 @@
                             scoreClass = "text-green-400";
                         }
 
-                        let statusClass = "";
-                        if (status === "Blocked") statusStyle = "color: red; font-weight: bold;";
-                        else if (status === "Suspicious") statusStyle = "color: orange; font-weight: bold";
-                        else if (status == "Monitoring") statusStyle = "color: skyblue; font-weight: bold;";
-                        else statusStyle = "color: lightgreen; font-weight: bold;";
+                        let statusStyle = "padding: 2px 6px; border-radius: 6px; font-weight: bold;";
+                        if (status === "Blocked") statusStyle += "background-color: #ff3b3b; color: white;";
+                        else if (status === "Suspicious") statusStyle += "background-color: orange; color: black";
+                        else if (status == "Monitoring") statusStyle += "background-color: #00bfff; color: black;";
+                        else statusStyle += "background-color: #4CAF50; color:white;";
 
                         const row = `
                           <tr class="border-b border-gray-600 hover:bg-[#33334d] transition duration-200">

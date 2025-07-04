@@ -233,7 +233,11 @@ def analyze_traffic():
             parsed_times = [datetime.fromisoformat(ts) for ts in timestamps]
             recent = [ts for ts in parsed_times if now - ts <= timedelta(seconds=5)]
  
-            entry["suspicion_score"] = calculate_suspicion_score(entry)
+            new_score = calculate_suspicion_score(entry)
+            if entry.get("suspicion_score") != new_score:
+                entry["suspicion_score"] = new_score
+                updated = True
+                           
             print(f"🧠 Score for {entry['ip']}: {entry['suspicion_score']}")
 
             if len(recent) >= 10:
