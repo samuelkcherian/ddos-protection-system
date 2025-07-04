@@ -100,9 +100,11 @@
                             <td class="px-4 py-2">${count}</td>
                             <td class="px-4 py-2">${lastSeen}</td>
                             <td class="px-4 py-2"> 
-                                <span class="${statusClass} px-2 py-1 rounded transition duration-300">${status}</span>
+                                <span class="px-2 py-1 rounded shadow-md ${statusClass}">${status}</span>
                             </td>
-                            <td class="px-4 py-2 ${scoreClass}">${score}</td>
+                            <td class="px-4 py-2">
+                                <span class="${scoreClass}">${score}</span>
+                            </td>
                             <td class="px-4 py-2">
                                 ${status === "Blocked" ? `
                                   <button onclick="unblockIP('${ip}')" class="bg-pink-600 hover:bg-pink-700 text-white text-xs px-2 py-1 rounded">
