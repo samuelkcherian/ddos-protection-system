@@ -123,6 +123,8 @@ def log_data():
             "timestamps": [now]
         })
 
+    print(f"[DEBUG] Received log for IP {ip} with timestamp: {now}")    
+
     with open("dashboard_data.json", "w") as f:
         json.dump(dashboard, f, indent=4)
 
