@@ -89,10 +89,10 @@
                         }
 
                         let statusClass = "";
-                        if (status === "Blocked") statusClass = "bg-red-800 text-white";
-                        else if (status === "Suspicious") statusClass = "bg-yellow-700 text-black";
-                        else if (status == "Monitoring") statusClass = "bg-blue-800 text-white";
-                        else statusClass = "bg-green-700 text-white";
+                        if (status === "Blocked") statusStyle = "color: red; font-weight: bold;";
+                        else if (status === "Suspicious") statusStyle = "color: orange; font-weight: bold";
+                        else if (status == "Monitoring") statusStyle = "color: skyblue; font-weight: bold;";
+                        else statusStyle = "color: lightgreen; font-weight: bold;";
 
                         const row = `
                           <tr class="border-b border-gray-600 hover:bg-[#33334d] transition duration-200">
@@ -100,11 +100,8 @@
                             <td class="px-4 py-2">${count}</td>
                             <td class="px-4 py-2">${lastSeen}</td>
                             <td class="px-4 py-2"> 
-                                <span class="px-2 py-1 rounded shadow-md ${statusClass}">${status}</span>
-                            </td>
-                            <td class="px-4 py-2">
-                                <span class="${scoreClass}">${score}</span>
-                            </td>
+                                <span style="${statusStyle}; padding: 4px 8px; border-radius: 5px; background-color: rgba(255,255,255,0.1);">${status}</span></td>
+                            <td class="px-4 py-2">${score}</td>
                             <td class="px-4 py-2">
                                 ${status === "Blocked" ? `
                                   <button onclick="unblockIP('${ip}')" class="bg-pink-600 hover:bg-pink-700 text-white text-xs px-2 py-1 rounded">
