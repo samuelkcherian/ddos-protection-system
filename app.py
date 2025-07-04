@@ -97,7 +97,7 @@ def log_data():
     except FileNotFoundError:
         dashboard = []
 
-    now = datetime.now(timezone.utc).isoformat()
+    now = data.get("timestamp", datetime.now(timezone.utc).isoformat())
     updated = False
 
     for entry in dashboard:
@@ -105,7 +105,7 @@ def log_data():
             entry["packet_count"] = count
             entry["last_seen"] = last_seen
             entry["status"] = status
-            
+
             if "timestamps" not in entry:
                 entry["timestamps"] = []
             entry["timestamps"].append(now)

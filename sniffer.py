@@ -13,12 +13,14 @@ ip_packet_count = {}
 start_time = time.time()
 
 def report_to_dashboard(ip, packet_count, status="Blocked"):
+    timestamp = datetime.now(timezone.utc).isoformat()
     try:
         response = requests.post("https://ddos-protection-system-6qob.onrender.com/api/log", json={
             "ip": ip,
             "packet_count": packet_count,
             "last_seen": datetime.now(timezone.utc).isoformat(),
-            "status": status
+            "status": status,
+            "timestamp": timestamp
         })
         if response.status_code == 204:
             print(f"✅ Reported {ip} to live dashboard")
