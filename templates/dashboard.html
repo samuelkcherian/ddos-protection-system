@@ -3,127 +3,77 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>DDoS Monitoring Dashboard</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/dashboard.css">
-    <script defer src="/static/dashboard.js"></script>
+    <title>DDoS Guard Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="dashboard.css">
 </head>
 
 <body>
-    <div class="container">
-        <!-- Sidebar -->
-        <aside class="sidebar" id="sidebar">
-            <div class="brand">
-                <h2>DDoS Guard</h2>
-            </div>
-            <nav class="nav-links">
-                <a href="#" class="active">Dashboard</a>
-                <a href="#">Analytics</a>
-                <a href="#">Settings</a>
-                <a href="/logout">Logout</a>
-            </nav>
-        </aside>
-
-        <!-- Main content -->
-        <main class="main-content">
-            <div class="header">
-                <h2>DDoS Monitoring</h2>
-                <button class="logout-btn" onclick="window.location.href='/logout'">Logout</button>
-            </div>
-
-            <div class="table-section">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>IP Address</th>
-                            <th>Packet Count</th>
-                            <th>Last Seen</th>
-                            <th>Suspicion Score</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                </table>
-                <tbody id="trafficTable"></tbody>
-            </div>
-            <!-- Topbar -->
-            <header class="topbar">
-                <button id="toggleSidebar">☰</button>
-                <div class="topbar-title">Dashboard</div>
-                <div class="profile">👤</div>
-            </header>
-
-            <!-- Dashboard Content -->
-            <section class="dashboard-content">
-                <h1>Welcome back 👋</h1>
-                <p>Monitoring traffic and detecting threats in real-time.</p>
-
-                <div class="stats">
-                    <div class="card">
-                        <h3>Total IPs</h3>
-                        <p id="total-ips">--</p>
-                    </div>
-                    <div class="card">
-                        <h3>Blocked</h3>
-                        <p id="blocked-count">--</p>
-                    </div>
-                    <div class="card">
-                        <h3>Suspicious</h3>
-                        <p id="suspicious-count">--</p>
-                    </div>
-                </div>
-            </section>
-        </main>
+    <div class="sidebar">
+        <h2>DDoS Guard</h2>
+        <a href="#" class="active">Dashboard</a>
+        <a href="#">Analytics</a>
+        <a href="#">Settings</a>
+        <a href="#">Logout</a>
     </div>
 
-    <script>
-        function fetchData() {
-            fetch("/data")
-                .then(res => res.json())
-                .then(data => {
-                    const table = document.getElementById("trafficTable");
-                    table.innerHTML = "";
+    <div class="main">
+        <div class="header">
+            <div class="dashboard-title">DDoS Monitoring</div>
+            <button class="logout-btn">Logout</button>
+        </div>
 
-                    data.forEach(entry => {
-                        const ip = entry.ip;
-                        const count = entry.packet_count;
-                        const lastSeen = new Date(entry.last_seen).toLocaleString();
-                        const status = entry.status;
-                        const score = entry.suspicion_score || 0;
+        <div class="cards">
+            <div class="card">
+                <h4>Total IPs</h4>
+                <p>--</p>
+            </div>
+            <div class="card">
+                <h4>Blocked</h4>
+                <p>--</p>
+            </div>
+            <div class="card">
+                <h4>Suspicious</h4>
+                <p>--</p>
+            </div>
+        </div>
 
-                        let statusClass = "status-" + status;
-                        let scoreClass = score >= 70 ? "score-high" : (score >= 40 ? "score-mid" : "score-low");
-
-                        const row = `
-                            <tr>
-                                <td>${ip}</td>
-                                <td>${count}</td>
-                                <td>${lastSeen}</td>
-                                <td><span class="status-badge ${statusClass}">${status}</span></td>
-                                <td><span class="${scoreClass}">${score}</span></td>
-                                <td>
-                                    ${status === "Blocked" ? `<button class="unblock-btn" onclick="unblockIP('${ip}')">Unblock</button>` : ""}
-                                </td>
-                            </tr>
-                        `;
-                        table.innerHTML += row;
-                    });
-                });
-        }
-
-        function unblockIP(ip) {
-            fetch("/unblock", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ ip })
-            }).then(() => fetchData());
-        }
-
-        setInterval(fetchData, 3000);
-        fetchData();
-    </script>
-
+        <table>
+            <thead>
+                <tr>
+                    <th>IP Address</th>
+                    <th>Packet Count</th>
+                    <th>Last Seen</th>
+                    <th>Status</th>
+                    <th>Suspicion Score</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="table-body">
+                <!-- Dynamic rows will go here -->
+                <tr>
+                    <td>192.168.0.1</td>
+                    <td>5</td>
+                    <td>7/4/2025, 11:40:12 AM</td>
+                    <td class="status-safe">Safe</td>
+                    <td>20</td>
+                    <td><button
+                            style="padding:4px 8px; background-color: #6c72ff; color:white; border:none; border-radius:4px;">Unblock</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>10.0.0.5</td>
+                    <td>18</td>
+                    <td>7/4/2025, 11:38:10 AM</td>
+                    <td class="status-blocked">Blocked</td>
+                    <td>90</td>
+                    <td><button
+                            style="padding:4px 8px; background-color: #6c72ff; color:white; border:none; border-radius:4px;">Unblock</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </body>
 
 </html>
