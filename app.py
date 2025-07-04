@@ -198,6 +198,25 @@ def monitor_domain():
         "ip": resolved_ip
     }),200
 
+def calculate_suspicion_score(entry):
+    timestamps = entry.get("timestamps", [])
+    if len(timestamps) < 2:
+        return 0
+    
+    parsed_times = [datetime.fromisoformat(ts) for ts in timestamps]
+    now = datetime.now(timezone.utc)
+
+    recent = [ts for ts in parsed_times if now - ts <= timedelta(seconds=10)]
+    count = len(recent)
+
+    score = min(100, count * 10)
+    if entry.get("status") == "Blocked":
+        score = max(score, 70)
+    elif entry.get("status") == "Suspicious":
+        score = max(score, 50)
+
+    return score
+
 def analyze_traffic():
     while True:
         try:
@@ -212,20 +231,26 @@ def analyze_traffic():
         for entry in dashboard:
             timestamps = entry.get("timestamps", [])
             parsed_times = [datetime.fromisoformat(ts) for ts in timestamps]
-
             recent = [ts for ts in parsed_times if now - ts <= timedelta(seconds=5)]
+ 
+            entry["suspicion_score"] = calculate_suspicion_score(entry)
+            print(f"🧠 Score for {entry['ip']}: {entry['suspicion_score']}")
 
             if len(recent) >= 10:
                 if entry["status"] != "Suspicious":
                     entry["status"] = "Suspicious"
                     print(f"⚠️ Suspicious activity detected from {entry['ip']}")
                     updated = True
+            
+           
 
         if updated:
             with open("dashboard_data.json", "w") as f:
                 json.dump(dashboard, f, indent=4)
 
         time.sleep(5)
+
+
 #def run_sniffer():
 #    while True:
  #       unblock_expired_ips()

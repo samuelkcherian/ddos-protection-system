@@ -23,6 +23,7 @@ def report_to_dashboard(ip, packet_count, status="Blocked"):
             "status": status,
             "timestamp": timestamp
         })
+        print(f"[DEBUG] Response: {response.status_code} - {response.text}")
         if response.status_code == 204:
             print(f"✅ Reported {ip} to live dashboard")
         else:
