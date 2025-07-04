@@ -70,12 +70,12 @@
                 .then(res => res.json())
                 .then(data => {
                     const table = document.getElementById("table-body");
-                    table.innerHTML = "";
+                    tableBody.innerHTML = "";
 
                     data.forEach(entry => {
                         const ip = entry.ip;
                         const count = entry.packet_count;
-                        const lastSeen = new Date(entry, last_seen).toLocaleString();
+                        const lastSeen = new Date(entry.last_seen).toLocaleString();
                         const status = entry.status;
                         const score = entry.suspicion_score || 0;
 
@@ -95,12 +95,12 @@
                         else statusClass = "bg-green-700 text-white";
 
                         const row = `
-                          <tr class="border-b border-gray-600 hover:bg-[#33334d] transistion duration-200">
+                          <tr class="border-b border-gray-600 hover:bg-[#33334d] transition duration-200">
                             <td class="px-4 py-2">${ip}</td>
                             <td class="px-4 py-2">${count}</td>
                             <td class="px-4 py-2">${lastSeen}</td>
-                            <td class="px-4 py-2">${statusClass}</td>
-                            <td class="px-4 py-2">${scoreClass}</td>
+                            <td class="px-4 py-2 ${statusClass} rounded">${status}</td>
+                            <td class="px-4 py-2 ${scoreClass}">${score}</td>
                             <td class="px-4 py-2">
                                 ${status === "Blocked" ? `
                                   <button onclick="unblockIP('${ip}')" class="bg-pink-600 hover:bg-pink-700 text-white text-xs px-2 py-1 rounded">
