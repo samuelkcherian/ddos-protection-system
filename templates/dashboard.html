@@ -3,177 +3,58 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>DDoS Monitoring Tool</title>
-    <link rel="stylesheet" href="/static/style.css">
-    <style>
-        body {
-            cursor: none;
-            overflow-x: hidden;
-        }
-
-        .trail {
-            position: absolute;
-            width: 15px;
-            height: 15px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(255, 0, 255, 0.8) 0%, transparent 70%);
-            pointer-events: none;
-            animation: fadeOut 0.5s ease-out forwards;
-        }
-
-        @keyframes fadeOut {
-            to {
-                opacity: 0;
-                transform: scale(2);
-            }
-        }
-    </style>
+    <title>DDoS Monitoring Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/dashboard.css">
+    <script defer src="/static/dashboard.js"></script>
 </head>
 
 <body>
-    <div class="profile-dropdown">
-        <div class="profile-icon">👤</div>
-        <div class="dropdown-content">
-            <a href="#">Settings</a>
-            <a href="/logout">Logout</a>
-        </div>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="brand">
+                <h2>DDoS Guard</h2>
+            </div>
+            <nav class="nav-links">
+                <a href="#" class="active">Dashboard</a>
+                <a href="#">Analytics</a>
+                <a href="#">Settings</a>
+                <a href="/logout">Logout</a>
+            </nav>
+        </aside>
+
+        <!-- Main content -->
+        <main class="main-content">
+            <!-- Topbar -->
+            <header class="topbar">
+                <button id="toggleSidebar">☰</button>
+                <div class="topbar-title">Dashboard</div>
+                <div class="profile">👤</div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <section class="dashboard-content">
+                <h1>Welcome back 👋</h1>
+                <p>Monitoring traffic and detecting threats in real-time.</p>
+
+                <div class="stats">
+                    <div class="card">
+                        <h3>Total IPs</h3>
+                        <p id="total-ips">--</p>
+                    </div>
+                    <div class="card">
+                        <h3>Blocked</h3>
+                        <p id="blocked-count">--</p>
+                    </div>
+                    <div class="card">
+                        <h3>Suspicious</h3>
+                        <p id="suspicious-count">--</p>
+                    </div>
+                </div>
+            </section>
+        </main>
     </div>
-    <div class="navbar">
-        <div class="title">DDoS Monitoring Tool</div>
-        <div class="profile-icon">👤</div>
-    </div>
-
-    <div class="domain-monitor-container">
-        <input type="text" id="domainInput" placeholder="Enter domain (e.g., example.com)">
-        <button onclick="monitorDomain()">Monitor Domain</button>
-    </div>
-
-    <div class="table-container" style="max-height: 400px; overflow-y: auto;">
-        <table class="min-w-full bg-[#1e1e2f] text-white rounded-lg overflow-hidden shadow-lg">
-            <thead class="bg-purple-700 text-left text-sm uppercase tracking-wider">
-                <tr>
-                    <th class="px-4 py-3">IP Address</th>
-                    <th class="px-4 py-3">Packet Count</th>
-                    <th class="px-4 py-3">Last Seen</th>
-                    <th class="px-4 py-3">Status</th>
-                    <th class="px-4 py-3">Suspicion Score</th>
-                    <th class="px-4 py-3">Action</th>
-                </tr>
-            </thead>
-            <tbody id="trafficTable" class="bg-[#2a2a3d] text-sm font-medium"></tbody>
-        </table>
-    </div>
-
-    <script>
-        function fetchData() {
-            fetch("/data")
-                .then(res => res.json())
-                .then(data => {
-                    const tableBody = document.getElementById("trafficTable");
-                    tableBody.innerHTML = "";
-
-                    data.forEach(entry => {
-                        const ip = entry.ip;
-                        const count = entry.packet_count;
-                        const lastSeen = new Date(entry.last_seen).toLocaleString();
-                        const status = entry.status;
-                        const score = entry.suspicion_score || 0;
-
-                        let scoreClass = "";
-                        if (score >= 70) {
-                            scoreClass = "text-red-500 font-bold";
-                        } else if (score >= 40) {
-                            scoreClass = "text-yellow-400 font-semibold";
-                        } else {
-                            scoreClass = "text-green-400";
-                        }
-
-                        let statusStyle = "padding: 2px 6px; border-radius: 6px; font-weight: bold;";
-                        if (status === "Blocked") statusStyle += "background-color: #ff3b3b; color: white;";
-                        else if (status === "Suspicious") statusStyle += "background-color: orange; color: black";
-                        else if (status == "Monitoring") statusStyle += "background-color: #00bfff; color: black;";
-                        else statusStyle += "background-color: #4CAF50; color:white;";
-
-                        const row = `
-                          <tr class="border-b border-gray-600 hover:bg-[#33334d] transition duration-200">
-                            <td class="px-4 py-2">${ip}</td>
-                            <td class="px-4 py-2">${count}</td>
-                            <td class="px-4 py-2">${lastSeen}</td>
-                            <td class="px-4 py-2"> 
-                                <span style="${statusStyle}; padding: 4px 8px; border-radius: 5px; background-color: rgba(255,255,255,0.1);">${status}</span></td>
-                            <td class="px-4 py-2">${score}</td>
-                            <td class="px-4 py-2">
-                                ${status === "Blocked" ? `
-                                  <button onclick="unblockIP('${ip}')" class="bg-pink-600 hover:bg-pink-700 text-white text-xs px-2 py-1 rounded">
-                                    Unblock
-                                  </button>` : ""}
-                            </td>
-                          </tr>
-                        `;
-                        tableBody.innerHTML += row;
-                    });
-                });
-        }
-    </script>
-
-
-    <script>
-        function unblockIP(ip) {
-            fetch("/unblock", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ ip })
-            }).then(() => fetchData());
-        }
-
-        setInterval(fetchData, 3000);
-        fetchData();
-
-    </script>
-
-    <script>
-        document.addEventListener("mousemove", e => {
-            const trail = document.createElement("div");
-            trail.className = "trail";
-            trail.style.left = `${e.clientX}px`;
-            trail.style.top = `${e.clientY}px`;
-            document.body.appendChild(trail);
-            setTimeout(() => trail.remove(), 500);
-        });
-
-    </script>
-    <script>
-        function monitorDomain() {
-            const domainInput = document.getElementById("domainInput").value;
-            if (!domainInput) return alert("Please enter a domain name");
-
-            fetch("/monitor", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ domain: domainInput })
-            })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.error) {
-                        alert("❌ " + data.error);
-                    } else {
-                        alert(`✅ Domain resolved to IP: ${data.ip}`);
-                        fetchData();  // Refresh dashboard data
-                    }
-                })
-                .catch(err => {
-                    console.error("Error monitoring domain:", err);
-                    alert("⚠️ Error sending domain for monitoring");
-                });
-        }
-    </script>
-    <link rel="icon" href="data:,">
-    <footer style="text-align: center; margin-top: 20px; padding: 10px; color: #bbb;font-size: 14px;">
-        © 2025. Developed by <a href="https://github.com/samuelkcherian" target="_blank"
-            style="color: #c57bff; text-decoration: none;">Samuel</a>
-    </footer>
 </body>
 
 </html>
