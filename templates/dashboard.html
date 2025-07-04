@@ -26,6 +26,25 @@
 
         <!-- Main content -->
         <main class="main-content">
+            <div class="header">
+                <h2>DDoS Monitoring</h2>
+                <button class="logout-btn" onclick="window.location.href='/logout'">Logout</button>
+            </div>
+
+            <div class="table-section">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>IP Address</th>
+                            <th>Packet Count</th>
+                            <th>Last Seen</th>
+                            <th>Suspicion Score</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                </table>
+                <tbody id="trafficTable"></tbody>
+            </div>
             <!-- Topbar -->
             <header class="topbar">
                 <button id="toggleSidebar">☰</button>
@@ -55,6 +74,56 @@
             </section>
         </main>
     </div>
+
+    <script>
+        function fetchData() {
+            fetch("/data")
+                .then(res => res.json())
+                .then(data => {
+                    const table = document.getElementById("trafficTable");
+                    table.innerHTML = "";
+
+                    data.forEach(entry => {
+                        const ip = entry.ip;
+                        const count = entry.packet_count;
+                        const lastSeen = new Date(entry.last_seen).toLocaleString();
+                        const status = entry.status;
+                        const score = entry.suspicion_score || 0;
+
+                        let statusClass = "status-" + status;
+                        let scoreClass = score >= 70 ? "score-high" : (score >= 40 ? "score-mid" : "score-low");
+
+                        const row = `
+                            <tr>
+                                <td>${ip}</td>
+                                <td>${count}</td>
+                                <td>${lastSeen}</td>
+                                <td><span class="status-badge ${statusClass}">${status}</span></td>
+                                <td><span class="${scoreClass}">${score}</span></td>
+                                <td>
+                                    ${status === "Blocked" ? `<button class="unblock-btn" onclick="unblockIP('${ip}')">Unblock</button>` : ""}
+                                </td>
+                            </tr>
+                        `;
+                        table.innerHTML += row;
+                    });
+                });
+        }
+
+        function unblockIP(ip) {
+            fetch("/unblock", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ ip })
+            }).then(() => fetchData());
+        }
+
+        setInterval(fetchData, 3000);
+        fetchData();
+    </script>
+
 </body>
 
 </html>

@@ -50,8 +50,104 @@ body {
 /* Main Content */
 .main-content {
     flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    color: #fff;
+}
+
+.header {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.logout-btn {
+    background-color: #ff5f5f;
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.table-section {
+    overflow-x: auto;
+    background: #1e1e2f;
+    border-radius: 8px;
+    padding: 15px;
+}
+
+.table-section table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-section th,
+.table-section td,
+{
+padding: 10px 12px;
+text-align: left;
+border-bottom: 1px solid #2f2f3f;
+font-size: 14px;
+}
+
+.table-section tr:hover {
+    background-color: #2c2c3c;
+}
+
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 13px;
+    display: inline-block;
+}
+
+.status-Blocked {
+    background-color: #ff4d4f;
+    color: white;
+}
+
+.status-Suspicious {
+    background-color: #fadb14;
+    color: black;
+}
+
+.status-Monitoring {
+    background-color: #1890ff;
+    color: white;
+}
+
+.status-Safe {
+    background-color: #52c41a;
+    color: white;
+}
+
+.score-low {
+    color: #52c41a;
+    font-weight: bold;
+}
+
+.score-mid {
+    color: #fadb14;
+    font-weight: bold;
+}
+
+.score-high {
+    color: #ff4d4f;
+    font-weight: bold;
+}
+
+.unblock-btn {
+    background-color: #d63384;
+    color: white;
+    padding: 5px 10px;
+    font-size: 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: none;
 }
 
 /* Topbar */
