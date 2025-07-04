@@ -49,17 +49,18 @@
     </div>
 
     <div class="table-container" style="max-height: 400px; overflow-y: auto;">
-        <table>
-            <thead>
+        <table class="min-w-full bg-[#1e1e2f] text-white rounded-lg overflow-hidden shadow-lg">
+            <thead class="bg-purple-700 text-left text-sm uppercase tracking-wider">
                 <tr>
-                    <th>IP Address</th>
-                    <th>Packet Count</th>
-                    <th>Last Seen</th>
-                    <th>Status</th>
-                    <th>Action</th>
+                    <th class="px-4 py-3">IP Address</th>
+                    <th class="px-4 py-3">Packet Count</th>
+                    <th class="px-4 py-3">Last Seen</th>
+                    <th class="px-4 py-3">Status</th>
+                    <th class="px-4 py-3">Suspicion Score</th>
+                    <th class="px-4 py-3">Action</th>
                 </tr>
             </thead>
-            <tbody id="trafficTable"></tbody>
+            <tbody id="trafficTable" class="bg-[#2a2a3d] text-sm font-medium"></tbody>
         </table>
     </div>
 
@@ -68,32 +69,63 @@
             fetch("/data")
                 .then(res => res.json())
                 .then(data => {
-                    const table = document.getElementById("trafficTable");
+                    const table = document.getElementById("table-body");
                     table.innerHTML = "";
-                    data.forEach(d => {
-                        const row = document.createElement("tr");
-                        row.innerHTML = `
-                            <td>${d.ip}</td>
-                            <td>${d.packet_count || '0'}</td>
-                            <td>${d.last_seen || ''}</td>
-                            <td class="${d.status.toLowerCase()}">${d.status}</td>
-                            <td>${d.status === 'Blocked' ? `<button onclick="unblockIP('${d.ip}')">Unblock</button>` : ''}</td>
 
-                    `;
-                        table.appendChild(row);
+                    data.forEach(entry => {
+                        const ip = entry.ip;
+                        const count = entry.packet_count;
+                        const lastSeen = new Date(entry, last_seen).toLocaleString();
+                        const status = entry.status;
+                        const score = entry.suspicion_score || 0;
+
+                        let scoreClass = "";
+                        if (score >= 70) {
+                            scoreClass = "text-red-500 font-bold";
+                        } else if (score >= 40) {
+                            scoreClass = "text-yellow-400 font-semibold";
+                        } else {
+                            scoreClass = "text-green-400";
+                        }
+
+                        let statusClass = "";
+                        if (status === "Blocked") statusClass = "bg-red-800 text-white";
+                        else if (status === "Suspicious") statusClass = "bg-yellow-700 text-black";
+                        else if (status == "Monitoring") statusClass = "bg-blue-800 text-white";
+                        else statusClass = "bg-green-700 text-white";
+
+                        const row = `
+                          <tr class="border-b border-gray-600 hover:bg-[#33334d] transistion duration-200">
+                            <td class="px-4 py-2">${ip}</td>
+                            <td class="px-4 py-2">${count}</td>
+                            <td class="px-4 py-2">${lastSeen}</td>
+                            <td class="px-4 py-2">${statusClass}</td>
+                            <td class="px-4 py-2">${scoreClass}</td>
+                            <td class="px-4 py-2">
+                                ${status === "Blocked" ? `
+                                  <button onclick="unblockIP('${ip}')" class="bg-pink-600 hover:bg-pink-700 text-white text-xs px-2 py-1 rounded">
+                                    Unblock
+                                  </button>` : ""}
+                            </td>
+                          </tr>
+                        `;
+                        tableBody.innerHTML += row;
                     });
                 });
         }
 
+
         function unblockIP(ip) {
             fetch("/unblock", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json"
+                },
                 body: JSON.stringify({ ip })
             }).then(() => fetchData());
         }
 
-        setInterval(fetchData, 2000);
+        setInterval(fetchData, 3000);
         fetchData();
 
     </script>
