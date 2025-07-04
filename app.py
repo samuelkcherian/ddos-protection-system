@@ -83,6 +83,8 @@ def log_data():
     if not request.is_json:
         return abort(400, description="Invalid data format.")
     data = request.get_json()
+    print(f"📥 Incoming log data: {request.get_json()}")
+    
     try:
         ip = data["ip"]
         count = data["packet_count"]
