@@ -84,6 +84,19 @@ body {
     border-collapse: collapse;
 }
 
+thead {
+    background-color: #ddd;
+    color: #333;
+    /* Set to dark grey or black for visibility */
+    text-transform: uppercase;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+tr:hover {
+    background-color: #f0f0f0;
+}
+
 .table-section th,
 .table-section td,
 {
