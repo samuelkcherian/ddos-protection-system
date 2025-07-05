@@ -26,9 +26,9 @@ async function fetchData() {
             <td>${entry.ip}</td>
             <td>${entry.packet_count}</td>
             <td>${new Date(entry.last_seen).toLocaleString()}</td>
-            <td class="${getStatusClass(entry.status)}">${entry.status}</td>
+            <td><span class="${getStatusClass(entry.status)}">${entry.status}</span></td>
             <td>${entry.suspicion_score || 0}</td>
-            <td>${entry.blocked_at ? timeAgo(entry.blocked_at) : "-"}</td>
+            <td>${entry.blocked_duration || "-"}</td>
             <td>${entry.status === "Blocked" ? `<button class="unblock-btn" onclick="unblockIP('${entry.ip}')">Unblock</button>` : "-"}</td>
         `;
 
@@ -40,13 +40,10 @@ async function fetchData() {
     document.getElementById("suspiciousIPs").textContent = suspicious;
 }
 
-// Format blocked_at time
-function formatTime(isoTime) {
-    try {
-        return new Date(isoTime).toLocaleString();
-    } catch {
-        return "-";
-    }
+function getStatusClass(status) {
+    if (status === "Blocked") return "status-blocked";
+    if (status === "Suspicious") return "status-suspicious";
+    return "status-safe";
 }
 
 function timeAgo(isoTime) {
@@ -60,19 +57,17 @@ function timeAgo(isoTime) {
     if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
     return then.toLocaleString();
 }
-// Return CSS class for status color
-function getStatusClass(status) {
-    if (status === "Blocked") return "status-blocked";
-    if (status === "Suspicious") return "status-suspicious";
-    return "status-safe";
-}
 
 // Call unblock endpoint
 async function unblockIP(ip) {
     const confirmed = confirm(`Unblock IP ${ip}?`);
     if (!confirmed) return;
 
-    const res = await fetch(`/unblock/${ip}`, { method: "POST" });
+    const res = await fetch(`/unblock`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ip })
+    });
     if (res.ok) {
         alert(`✅ ${ip} unblocked successfully.`);
         fetchData(); // Refresh
