@@ -133,19 +133,18 @@ def log_data():
             
 
     if not updated:
-        dashboard.append({
+        new_entry = {
             "ip": ip,
             "packet_count": count,
             "last_seen": last_seen,
             "status": status,
             "timestamps": [now],
             "blocked_at": now if status == "Blocked" else None
-})
+        }
 
 
 
         if status == "Blocked":
-            new_entry["blocked_at"] = now
             print(f"🆕 New blocked IP {ip} with blocked_at = {now}")
 
         dashboard.append(new_entry)
