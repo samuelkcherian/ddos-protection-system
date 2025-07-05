@@ -1,5 +1,5 @@
 # sniffer.py
-from scapy.all import sniff, IP
+from scapy.all import sniff, IP, conf
 from ip_blocker import block_ip, load_blocked_ips
 import requests
 from datetime import datetime, timezone
@@ -38,30 +38,45 @@ def report_to_dashboard(ip, packet_count, status="Blocked"):
 def packet_handler(pkt):
     global ip_packet_count, start_time
 
-    if IP in pkt:
-        src_ip = pkt[IP].src
-        print(f"📦 Packet detected from {src_ip}")  # Debug output
+    try:
+        if IP in pkt:
+            src_ip = pkt[IP].src
+            print(f"📦 Packet detected from {src_ip}")  # Debug output
 
-        current_time = time.time()
+            current_time = time.time()
 
         # Reset counts if time window has passed
-        if current_time - start_time > time_window:
-            ip_packet_count = {}
-            start_time = current_time
+            if current_time - start_time > time_window:
+                ip_packet_count = {}
+                start_time = current_time
 
-        ip_packet_count[src_ip] = ip_packet_count.get(src_ip, 0) + 1
+            ip_packet_count[src_ip] = ip_packet_count.get(src_ip, 0) + 1
 
-        if ip_packet_count[src_ip] > packet_threshold:
-            blocked = load_blocked_ips()
-            if src_ip not in blocked:
-                block_ip(src_ip)
-                report_to_dashboard(src_ip, ip_packet_count[src_ip], "Blocked")
-        else:
-            report_to_dashboard(src_ip, ip_packet_count[src_ip], "Safe")
+            if ip_packet_count[src_ip] > packet_threshold:
+                blocked = load_blocked_ips()
+                if src_ip not in blocked:
+                    block_ip(src_ip)
+                    report_to_dashboard(src_ip, ip_packet_count[src_ip], "Blocked")
+            else:
+                report_to_dashboard(src_ip, ip_packet_count[src_ip], "Safe")
+    except Exception as e:
+        print(f"⚠️ Error processing packet: {e}")
+
 
 def start_sniffing():
-    print("🔍 Monitoring all IP traffic...")
-    sniff(iface="eth0", prn=packet_handler, store=0)
+    print("🔍 Monitoring all IP traffic... ")
+
+    try:
+        sniff(
+            iface="eth0",
+            prn=packet_handler,
+            store=0,
+            stop_filter=lambda x: False  # Run forever unless interrupted
+        )
+    except KeyboardInterrupt:
+        print("\n🛑 Sniffer stopped by user.")
+    except Exception as e:
+        print(f"❌ Sniffer crashed: {e}")
 
 if __name__ == "__main__":
     start_sniffing()

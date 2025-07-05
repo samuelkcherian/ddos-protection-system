@@ -28,7 +28,7 @@ async function fetchData() {
             <td>${new Date(entry.last_seen).toLocaleString()}</td>
             <td class="${getStatusClass(entry.status)}">${entry.status}</td>
             <td>${entry.suspicion_score || 0}</td>
-            <td>${entry.blocked_at ? formatTime(entry.blocked_at) : "-"}</td>
+            <td>${entry.blocked_at ? timeAgo(entry.blocked_at) : "-"}</td>
             <td>${entry.status === "Blocked" ? `<button class="unblock-btn" onclick="unblockIP('${entry.ip}')">Unblock</button>` : "-"}</td>
         `;
 
@@ -49,6 +49,17 @@ function formatTime(isoTime) {
     }
 }
 
+function timeAgo(isoTime) {
+    if (!isoTime) return "-";
+    const now = new Date();
+    const then = new Date(isoTime);
+    const diff = Math.floor((now - then) / 1000);
+
+    if (diff < 60) return `${diff}s ago`;
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    return then.toLocaleString();
+}
 // Return CSS class for status color
 function getStatusClass(status) {
     if (status === "Blocked") return "status-blocked";
