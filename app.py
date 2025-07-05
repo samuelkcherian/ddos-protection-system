@@ -317,7 +317,7 @@ def get_block_duration(blocked_at_str):
  #       start_sniffing()
 
 threading.Thread(target=analyze_traffic, daemon=True).start()
-Thread(target=auto_unblock, daemon=True).start()
+threading.Thread(target=auto_unblock, daemon=True).start()
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
