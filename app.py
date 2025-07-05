@@ -77,10 +77,12 @@ def data():
             dashboard=json.load(f)
         
         for entry in dashboard:
-            if entry.get("status") == "Blocked" and "blocked_at" in entry:
+            if entry.get("status") == "Blocked" and entry.get("blocked_at"):
                 entry["block_duration"] = get_block_duration(entry["blocked_at"])
             else:
                 entry["block_duration"] = ""
+
+            entry["blocked_at"] = entry.get("blocked_at", "")
 
         return jsonify(dashboard)
 
