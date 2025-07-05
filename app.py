@@ -83,7 +83,7 @@ def log_data():
     if not request.is_json:
         return abort(400, description="Invalid data format.")
     data = request.get_json()
-    print(f"📥 Incoming log data: {request.get_json()}")
+    print(f"📥 Incoming log data: {data}")
 
     try:
         ip = data["ip"]
@@ -108,6 +108,10 @@ def log_data():
         if entry["ip"] == ip:
             entry["packet_count"] = count
             entry["last_seen"] = last_seen
+
+            if entry["status"] != "Blocked" and status == "Blocked":
+                entry["blocked_at"] = now
+                print(f"🔐 Set blocked_at for {ip} = {now}")
             entry["status"] = status
 
             if "timestamps" not in entry:
@@ -115,8 +119,6 @@ def log_data():
             entry["timestamps"].append(now)
             entry["timestamps"] = entry["timestamps"][-20:]
 
-            if status == "Blocked" and "blocked_at" not in entry:
-                entry["blocked_at"] = datetime.now(timezone.utc).isoformat()
             updated = True
             break
             
@@ -131,12 +133,10 @@ def log_data():
         }
 
         if status == "Blocked":
-            new_entry["blocked_at"] = datetime.now(timezone.utc).isoformat()
+            new_entry["blocked_at"] = now
+            print(f"🆕 New blocked IP {ip} with blocked_at = {now}")
 
         dashboard.append(new_entry)
-
-    print(f"[DEBUG] File exists? {os.path.exists(path)}")
-    print(f"[DEBUG] Writable? {os.access(path, os.W_OK)}")
 
     print(f"[DEBUG] Received log for IP {ip} with timestamp: {now}")    
 
