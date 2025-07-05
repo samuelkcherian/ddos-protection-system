@@ -13,23 +13,25 @@
 }
 
 body {
+    display: flex;
     margin: 0;
+    padding: 0;
     font-family: 'Segoe UI', sans-serif;
     background-color: var(--light-bg);
     color: var(--text-dark);
-    display: flex;
-    min-height: 100vh;
 }
 
 
 .sidebar {
-    width: 230px;
-    background-color: var(--sidebar-bg);
-    color: var(--text-light);
-    padding: 20px;
+    width: 250px;
+    min-height: 100vh;
+    background-color: #141c2b;
+    color: white;
+    padding: 20px 0;
     transition: all 0.3s ease;
-    position: relative;
-    z-index: 2;
+    position: fixed;
+    left: 0;
+    top: 0;
 }
 
 .sidebar h2 {
@@ -52,10 +54,9 @@ body {
 }
 
 .main {
-    flex: 1;
     padding: 20px;
-    transition: margin-left 0.3s ease;
-    margin-left: 230px;
+    margin-left: 250px;
+    width: calc(100% - 250px);
 }
 
 .header {
@@ -97,8 +98,7 @@ body {
 .cards {
     display: flex;
     gap: 20px;
-    margin: 20px 0;
-    flex-wrap: wrap;
+    margin-bottom: 20px;
 }
 
 .card {
@@ -123,23 +123,18 @@ body {
 }
 
 table {
-    table-layout: fixed;
     width: 100%;
     border-collapse: collapse;
-    background-color: #1e1e2f;
-    color: white;
-    border-radius: 10px;
-    overflow: hidden;
 }
 
 table td {
     white-space: nowrap;
 }
 
-th,
-td {
-    vertical-align: middle;
-    padding: 12px 15px;
+table th,
+table td {
+    font-size: 15px;
+    padding: 12px;
     text-align: center;
 }
 
@@ -156,6 +151,43 @@ th {
 
 tr:nth-child(even) {
     background-color: #2b2c3c;
+}
+
+/* Table column widths */
+th:nth-child(3),
+td:nth-child(3) {
+    /* Last Seen */
+    min-width: 160px;
+}
+
+th:nth-child(4),
+td:nth-child(4) {
+    /* Status */
+    min-width: 90px;
+}
+
+th:nth-child(5),
+td:nth-child(5) {
+    /* Suspicion Score */
+    min-width: 110px;
+}
+
+th:nth-child(6),
+td:nth-child(6) {
+    /* Time Blocked */
+    min-width: 130px;
+}
+
+th:nth-child(7),
+td:nth-child(7) {
+    /* Action */
+    min-width: 90px;
+}
+
+/* Prevent overlap in narrow screens */
+table td {
+    word-wrap: break-word;
+    white-space: normal;
 }
 
 .status-safe {

@@ -119,11 +119,9 @@ def log_data():
         if entry["ip"] == ip:
             entry["packet_count"] = count
             entry["last_seen"] = last_seen
-
-            if entry["status"] != "Blocked" and status == "Blocked":
-                entry["blocked_at"] = now
-                print(f"🔐 Set blocked_at for {ip} = {now}")
             entry["status"] = status
+            if status == "Blocked" and "blocked_at" not in entry:
+                entry["blocked_at"] = now
 
             if "timestamps" not in entry:
                 entry["timestamps"] = []
@@ -135,13 +133,16 @@ def log_data():
             
 
     if not updated:
-        new_entry = {
+        dashboard.append({
             "ip": ip,
             "packet_count": count,
             "last_seen": last_seen,
             "status": status,
-            "timestamps": [now]
-        }
+            "timestamps": [now],
+            "blocked_at": now if status == "Blocked" else None
+})
+
+
 
         if status == "Blocked":
             new_entry["blocked_at"] = now
@@ -170,7 +171,8 @@ def unblock():
 
     for entry in dashboard:
         if entry["ip"] == ip:
-            entry["status"] = "Unblocked"
+            entry["status"] = "Safe"
+            entry["blocked_at"] = None
             break
     with open("dashboard_data.json", "w") as f:
         json.dump(dashboard, f, indent=4)
