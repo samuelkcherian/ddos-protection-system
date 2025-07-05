@@ -46,6 +46,7 @@
                     <th>Last Seen</th>
                     <th>Status</th>
                     <th>Suspicion Score</th>
+                    <th>Time Blocked</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -74,6 +75,76 @@
             </tbody>
         </table>
     </div>
+
+    <script>
+        function formatDuration(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}m ${secs}s`;
+        }
+
+        function fetchData() {
+            fetch("/data")
+                .then(res => res.json())
+                .then(data => {
+                    const table = document.getElementById("table-body");
+                    table.innerHTML = "";
+
+                    data.forEach(entry => {
+                        const ip = entry.ip;
+                        const count = entry.packet_count;
+                        const lastSeen = new Date(entry.last_seen).toLocaleString();
+                        const status = entry.status;
+                        const score = entry.suspicion_score || 0;
+                        const blockDuration = entry.block_duration ? formatDuration(entry.block_duration) : "--";
+
+                        // Score color logic
+                        let scoreColor = "";
+                        if (score >= 70) scoreColor = "style='color: #ef4444; font-weight: bold;'";
+                        else if (score >= 40) scoreColor = "style='color: #f59e0b; font-weight: bold;'";
+                        else scoreColor = "style='color: #10b981; font-weight: bold;'";
+
+                        // Status color logic
+                        let statusClass = "";
+                        if (status === "Blocked") statusClass = "status-blocked";
+                        else if (status === "Suspicious") statusClass = "status-suspicious";
+                        else statusClass = "status-safe";
+
+                        const row = `
+                            <tr>
+                                <td>${ip}</td>
+                                <td>${count}</td>
+                                <td>${lastSeen}</td>
+                                <td class="${statusClass}">${status}</td>
+                                <td ${scoreColor}>${score}</td>
+                                <td>${blockDuration}</td>
+                                <td>
+                                    ${status === "Blocked" ? `
+                                        <button onclick="unblockIP('${ip}')" style="padding: 4px 8px; background-color: #6c72ff; color: white; border: none; border-radius: 4px;">Unblock</button>
+                                    ` : ""}
+                                </td>
+                            </tr>
+                        `;
+                        table.innerHTML += row;
+                    });
+                });
+        }
+
+        function unblockIP(ip) {
+            fetch("/unblock", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ ip })
+            }).then(() => fetchData());
+        }
+
+        // Refresh every 3 seconds
+        setInterval(fetchData, 3000);
+        fetchData();
+    </script>
+
 </body>
 
 </html>
