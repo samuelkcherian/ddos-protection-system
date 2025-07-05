@@ -23,13 +23,17 @@ def report_to_dashboard(ip, packet_count, status="Blocked"):
             "status": status,
             "timestamp": timestamp
         })
-        print(f"[DEBUG] Response: {response.status_code} - {response.text}")
+        if response.text.strip():
+            print(f"[DEBUG] Response: {response.status_code} - {response.text}")
+        else:
+            print(f"[DEBUG] Response: {response.status_code}")
+
         if response.status_code == 204:
             print(f"✅ Reported {ip} to live dashboard")
         else:
-            print(f"⚠️ Failed to report {ip} - {response.status_code}: {response.text}")
+            print(f"⚠️ Failed to report {ip} - {response.status_code}")
     except Exception as e:
-        print(f"❌ Exception during reporting: {e}")
+        print(f"❌ Exception during reporting for IP {ip}: {e}")
 
 def packet_handler(pkt):
     global ip_packet_count, start_time
