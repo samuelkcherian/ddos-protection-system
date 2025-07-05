@@ -8,8 +8,8 @@ async function fetchData() {
     const response = await fetch("/data");
     const data = await response.json();
 
-    const tbody = document.getElementById("table-body");
-    tbody.innerHTML = "";
+    const table = document.getElementById("table-body");
+    table.innerHTML = "";
 
     let total = 0, blocked = 0, suspicious = 0;
 
@@ -30,7 +30,7 @@ async function fetchData() {
             <td>${entry.status === "Blocked" ? `<button class="unblock-btn" onclick="unblockIP('${entry.ip}')">Unblock</button>` : "-"}</td>
         `;
 
-        tbody.appendChild(row);
+        table.appendChild(row);
     });
 
     document.getElementById("totalIPs").textContent = total;
