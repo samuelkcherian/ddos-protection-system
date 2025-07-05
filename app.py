@@ -74,9 +74,20 @@ def logout():
 def data():
     try:
         with open("dashboard_data.json", "r") as f:
-            return jsonify(json.load(f))
-    except:
+            dashboard=json.load(f)
+        
+        for entry in dashboard:
+            if entry.get("status") == "Blocked" and "blocked_at" in entry:
+                entry["block_duration"] = get_block_duration(entry["blocked_at"])
+            else:
+                entry["block_duration"] = ""
+
+        return jsonify(dashboard)
+
+    except Exception as e:
+        print(f"[ERROR] /data: {e}")
         return jsonify([])
+    
     
 @app.route("/api/log", methods=["POST"])
 def log_data():
@@ -288,6 +299,18 @@ def auto_unblock():
 
         time.sleep(30)
 
+def get_block_duration(blocked_at_str):
+    try:
+        blocked_at = datetime.fromisoformat(blocked_at_str)
+        now = datetime.now(timezone.utc)
+        duration = now - blocked_at
+        seconds = int(duration.total_seconds())
+
+        minutes, seconds = divmod(seconds, 60)
+        return f"{minutes}m {seconds}s"
+    except Exception as e:
+        print(f"[ERROR] Block duration parse failed: {e}")
+        return "Unknown"
 #def run_sniffer():
 #    while True:
  #       unblock_expired_ips()
