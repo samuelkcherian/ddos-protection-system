@@ -26,15 +26,15 @@
         <div class="cards">
             <div class="card">
                 <h4>Total IPs</h4>
-                <p>--</p>
+                <p id="total-ips">--</p>
             </div>
             <div class="card">
                 <h4>Blocked</h4>
-                <p>--</p>
+                <p id="blocked-count">--</p>
             </div>
             <div class="card">
                 <h4>Suspicious</h4>
-                <p>--</p>
+                <p id="suspicious-count">--</p>
             </div>
         </div>
 
@@ -51,30 +51,12 @@
                 </tr>
             </thead>
             <tbody id="table-body">
-                <!-- Dynamic rows will go here -->
-                <tr>
-                    <td>192.168.0.1</td>
-                    <td>5</td>
-                    <td>7/4/2025, 11:40:12 AM</td>
-                    <td class="status-safe">Safe</td>
-                    <td>20</td>
-                    <td><button
-                            style="padding:4px 8px; background-color: #6c72ff; color:white; border:none; border-radius:4px;">Unblock</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>10.0.0.5</td>
-                    <td>18</td>
-                    <td>7/4/2025, 11:38:10 AM</td>
-                    <td class="status-blocked">Blocked</td>
-                    <td>90</td>
-                    <td><button
-                            style="padding:4px 8px; background-color: #6c72ff; color:white; border:none; border-radius:4px;">Unblock</button>
-                    </td>
-                </tr>
+
             </tbody>
         </table>
     </div>
+
+    <script src="static/dashboard.js"></script>
 
     <script>
         function formatDuration(seconds) {
@@ -148,7 +130,6 @@
         setInterval(fetchData, 3000);
         fetchData();
     </script>
-
 </body>
 
 </html>
