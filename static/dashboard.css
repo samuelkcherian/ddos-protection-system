@@ -51,6 +51,8 @@ body {
 .main {
     flex: 1;
     padding: 20px;
+    transition: margin-left 0.3s ease;
+    margin-left: 230px;
 }
 
 .header {
@@ -58,6 +60,7 @@ body {
     justify-content: space-between;
     align-items: center;
 }
+
 
 .logout-btn {
     background-color: #ef4444;
@@ -159,6 +162,27 @@ tr:nth-child(even) {
 .status-suspicious {
     color: #f59e0b;
     font-weight: bold;
+}
+
+.sidebar {
+    transition: all 0.3s ease;
+}
+
+.sidebar.closed {
+    transform: translateX(-230px);
+}
+
+.main.expanded {
+    margin-left: 0;
+}
+
+.toggle-btn {
+    font-size: 22px;
+    background: none;
+    border: none;
+    color: var(--text-dark);
+    cursor: pointer;
+    margin-right: 12px;
 }
 
 @media (max-width: 768px) {

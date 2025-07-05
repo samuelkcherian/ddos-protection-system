@@ -1,6 +1,8 @@
 document.getElementById("toggleSidebar").addEventListener("click", () => {
-    const sidebar = document.getElementById("sidebar");
-    sidebar.classList.toggle("open");
+    const sidebar = document.querySelector(".sidebar");
+    const main = document.querySelector(".main");
+    sidebar.classList.toggle("closed");
+    main.classList.toggle("expanded");
 });
 
 // Load data and populate table
