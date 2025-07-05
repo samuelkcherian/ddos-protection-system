@@ -126,17 +126,17 @@ tr:nth-child(even) {
 }
 
 .status-safe {
-    color: var(--status-safe);
+    color: #10b981;
     font-weight: bold;
 }
 
 .status-blocked {
-    color: var(--status-blocked);
+    color: #ef4444;
     font-weight: bold;
 }
 
 .status-suspicious {
-    color: var(--status-suspicious);
+    color: #f59e0b;
     font-weight: bold;
 }
 

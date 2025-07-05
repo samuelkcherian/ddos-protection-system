@@ -96,7 +96,10 @@
                         const lastSeen = new Date(entry.last_seen).toLocaleString();
                         const status = entry.status;
                         const score = entry.suspicion_score || 0;
-                        const blockDuration = entry.block_duration ? formatDuration(entry.block_duration) : "--";
+                        const blockedAt = entry.blocked_at
+                            ? new Date(entry.blocked_at).toLocaleString()
+                            : "-";
+                        const blockDuration = entry.block_duration || "-";
 
                         // Score color logic
                         let scoreColor = "";
@@ -110,13 +113,14 @@
                         else if (status === "Suspicious") statusClass = "status-suspicious";
                         else statusClass = "status-safe";
 
-                        const row = `
+                        let row = `
                             <tr>
                                 <td>${ip}</td>
                                 <td>${count}</td>
                                 <td>${lastSeen}</td>
                                 <td class="${statusClass}">${status}</td>
                                 <td ${scoreColor}>${score}</td>
+                                <td>${blockedAt}</td>
                                 <td>${blockDuration}</td>
                                 <td>
                                     ${status === "Blocked" ? `
