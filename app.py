@@ -114,18 +114,26 @@ def log_data():
                 entry["timestamps"] = []
             entry["timestamps"].append(now)
             entry["timestamps"] = entry["timestamps"][-20:]
+
+            if status == "Blocked" and "blocked_at" not in entry:
+                entry["blocked_at"] = datetime.now(timezone.utc).isoformat()
             updated = True
             break
             
 
     if not updated:
-        dashboard.append({
+        new_entry = {
             "ip": ip,
             "packet_count": count,
             "last_seen": last_seen,
             "status": status,
             "timestamps": [now]
-        })
+        }
+
+        if status == "Blocked":
+            new_entry["blocked_at"] = datetime.now(timezone.utc).isoformat()
+
+        dashboard.append(new_entry)
 
     print(f"[DEBUG] File exists? {os.path.exists(path)}")
     print(f"[DEBUG] Writable? {os.access(path, os.W_OK)}")
@@ -254,6 +262,31 @@ def analyze_traffic():
 
         time.sleep(5)
 
+def auto_unblock():
+    while True:
+        try:
+            with open("dashboard_data.json", "r") as f:
+                dashboard = json.load(f)
+        except FileNotFoundError:
+            dashboard = []
+
+        now = datetime.now(timezone.utc)
+        updated = False
+
+        for entry in dashboard:
+            if entry.get("status") == "Blocked" and entry.get("blocked_at"):
+                blocked_time = datetime.fromisoformat(entry["blocked_at"])
+                if (now - blocked_time).total_seconds() > 600:
+                    print(f"🔓 Auto-unblocking {entry['ip']}")
+                    entry["status"] = "Safe"
+                    entry["blocked_at"] = None
+                    updated = True
+
+        if updated:
+            with open("dashboard_data.json", "w") as f:
+                json.dump(dashboard, f, indent=4)
+
+        time.sleep(30)
 
 #def run_sniffer():
 #    while True:
@@ -261,6 +294,7 @@ def analyze_traffic():
  #       start_sniffing()
 
 threading.Thread(target=analyze_traffic, daemon=True).start()
+Thread(target=auto_unblock, daemon=True).start()
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
