@@ -24,9 +24,12 @@ body {
 
 .sidebar {
     width: 230px;
-    background-color: #101935;
+    background-color: var(--sidebar-bg);
     color: var(--text-light);
     padding: 20px;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 2;
 }
 
 .sidebar h2 {
@@ -72,11 +75,12 @@ body {
 }
 
 .unblock-btn {
-    padding: 6px 12px;
+    padding: 4px 8px;
     background-color: #6c72ff;
     color: white;
     border: none;
     border-radius: 4px;
+    font-size: 11px;
     cursor: pointer;
 }
 
@@ -119,12 +123,17 @@ body {
 }
 
 table {
+    table-layout: fixed;
     width: 100%;
     border-collapse: collapse;
     background-color: #1e1e2f;
     color: white;
     border-radius: 10px;
     overflow: hidden;
+}
+
+table td {
+    white-space: nowrap;
 }
 
 th,
@@ -164,12 +173,10 @@ tr:nth-child(even) {
     font-weight: bold;
 }
 
-.sidebar {
-    transition: all 0.3s ease;
-}
 
 .sidebar.closed {
-    transform: translateX(-230px);
+    position: absolute;
+    left: -230px;
 }
 
 .main.expanded {

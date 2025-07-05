@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 import time
 import json
 
-packet_threshold = 50  # Number of packets from a single IP to consider suspicious
+packet_threshold = 10  # Number of packets from a single IP to consider suspicious
 time_window = 5        # Time window in seconds to check the threshold
 
 ip_packet_count = {}
