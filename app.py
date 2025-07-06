@@ -124,11 +124,8 @@ def log_data():
             entry["packet_count"] = count
             entry["last_seen"] = last_seen
             entry["status"] = status
-            if status == "Blocked":
-                if not entry.get("blocked_at"):
-                    entry["blocked_at"] = now
-            else:
-                entry["blocked_at"] = None
+            if status == "Blocked" and not entry.get("blocked_at"):
+                entry["blocked_at"] = now
 
             if "timestamps" not in entry:
                 entry["timestamps"] = []
@@ -148,11 +145,6 @@ def log_data():
             "timestamps": [now],
             "blocked_at": now if status == "Blocked" else None
         }
-
-
-
-        if status == "Blocked":
-            print(f"🆕 New blocked IP {ip} with blocked_at = {now}")
 
         dashboard.append(new_entry)
 

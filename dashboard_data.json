@@ -1,12 +1,12 @@
-[
-    {
-        "ip": "123.123.123.123",
-        "packet_count": 5,
-        "last_seen": "2025-07-04T08:30:00Z",
-        "status": "Blocked",
-        "timestamps": [
-            "2025-07-04T08:25:01Z",
-            "2025-07-04T08:25:03Z"
-        ]
-    }
-]
+{
+    "ip": "123.123.123.123",
+    "last_seen": "2025-07-04T08:30:00Z",
+    "packet_count": 5,
+    "status": "Blocked",
+    "suspicion_score": 70,
+    "timestamps": [
+        "2025-07-04T08:25:01Z",
+        "2025-07-04T08:25:03Z"
+    ],
+    "blocked_at": "2025-07-04T08:30:00Z"
+}

@@ -17,7 +17,10 @@ async function fetchData() {
 
     data.forEach(entry => {
         total++;
-        if (entry.status === "Blocked") blocked++;
+        if (entry.status === "Blocked") {
+            console.log(`[DEBUG JS] IP ${entry.ip} | Duration: ${entry.blocked_duration} | blocked_at: ${entry.blocked_at}`);
+        }
+
         if (entry.status === "Suspicious") suspicious++;
 
         const row = document.createElement("tr");
