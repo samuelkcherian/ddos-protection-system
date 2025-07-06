@@ -80,7 +80,7 @@ def data():
             if entry.get("status") == "Blocked" and entry.get("blocked_at"):
                 entry["block_duration"] = get_block_duration(entry["blocked_at"])
             else:
-                entry["block_duration"] = ""
+                entry["block_duration"] = "-"
 
             entry["blocked_at"] = entry.get("blocked_at", "")
 
@@ -122,7 +122,7 @@ def log_data():
             entry["packet_count"] = count
             entry["last_seen"] = last_seen
             entry["status"] = status
-            if status == "Blocked" and "blocked_at" not in entry:
+            if entry["status"] == "Blocked" and not entry.get("blocked_at"):
                 entry["blocked_at"] = now
 
             if "timestamps" not in entry:
