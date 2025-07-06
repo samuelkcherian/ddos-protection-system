@@ -256,6 +256,8 @@ def analyze_traffic():
         now = datetime.now(timezone.utc)
 
         for entry in dashboard:
+            if not isinstance(entry, dict):
+                continue
             timestamps = entry.get("timestamps", [])
             parsed_times = [datetime.fromisoformat(ts) for ts in timestamps]
             recent = [ts for ts in parsed_times if now - ts <= timedelta(seconds=5)]
@@ -293,6 +295,8 @@ def auto_unblock():
         updated = False
 
         for entry in dashboard:
+            if not isinstance(entry, dict):
+                continue
             if entry.get("status") == "Blocked" and entry.get("blocked_at"):
                 blocked_time = datetime.fromisoformat(entry["blocked_at"])
                 if (now - blocked_time).total_seconds() > 600:
