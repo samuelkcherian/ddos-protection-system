@@ -96,26 +96,18 @@ def data():
 @app.route("/api/log", methods=["POST"])
 def log_data():
     if not request.is_json:
-        print("[ERROR] Non-JSON data received")
         return abort(400, description="Invalid data format.")
     data = request.get_json()
-    print(f"📥 Incoming log data: {data}")
 
-    try: 
-        data = request.get_json()
-        print(f"[DEBUG] Incoming data: {data}")
-    except Exception as e:
-        print(f"[ERROR] JSON parse failed: {e}")
-        return abort(400, description="Invalid data format.")
-    
     try:
         ip = data["ip"]
         count = data["packet_count"]
         last_seen = data.get("last_seen", datetime.utcnow().isoformat())
         status = data.get("status", "Blocked")
+        blocked_at = data.get("blocked_at")  # NEW
     except KeyError as e:
         return abort(400, description=f"Missing key: {str(e)}")
-    
+
     try:
         with open("dashboard_data.json", "r") as f:
             dashboard = json.load(f)
@@ -124,8 +116,6 @@ def log_data():
 
     now = data.get("timestamp", datetime.now(timezone.utc).isoformat())
     updated = False
-    path = os.path.abspath("dashboard_data.json")
-    print(f"[DEBUG] Writing to: {path}")
 
     for entry in dashboard:
         if entry["ip"] == ip:
@@ -133,35 +123,28 @@ def log_data():
             entry["last_seen"] = last_seen
             entry["status"] = status
             if status == "Blocked" and not entry.get("blocked_at"):
-                entry["blocked_at"] = now
+                entry["blocked_at"] = blocked_at or now
 
-            if "timestamps" not in entry:
-                entry["timestamps"] = []
-            entry["timestamps"].append(now)
+            entry.setdefault("timestamps", []).append(now)
             entry["timestamps"] = entry["timestamps"][-20:]
-
             updated = True
             break
-            
 
     if not updated:
-        new_entry = {
+        dashboard.append({
             "ip": ip,
             "packet_count": count,
             "last_seen": last_seen,
             "status": status,
             "timestamps": [now],
-            "blocked_at": now if status == "Blocked" else None
-        }
-
-        dashboard.append(new_entry)
-
-    print(f"[DEBUG] Received log for IP {ip} with timestamp: {now}")    
+            "blocked_at": blocked_at if status == "Blocked" else None
+        })
 
     with open("dashboard_data.json", "w") as f:
         json.dump(dashboard, f, indent=4)
 
     return "", 204
+
     
 @app.route("/unblock", methods=["POST"])
 def unblock():
@@ -177,8 +160,8 @@ def unblock():
 
     for entry in dashboard:
         if entry["ip"] == ip:
-            entry["status"] = "Blocked"
-            entry["blocked_at"] = datetime.now(timezone.utc).isoformat()
+            entry["status"] = "Safe"
+            entry["blocked_at"] = None
             break
     with open("dashboard_data.json", "w") as f:
         json.dump(dashboard, f, indent=4)
