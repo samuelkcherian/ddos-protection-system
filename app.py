@@ -270,12 +270,11 @@ def analyze_traffic():
             print(f"🧠 Score for {entry['ip']}: {entry['suspicion_score']}")
 
             if len(recent) >= 10:
-                if entry["status"] != "Suspicious":
-                    entry["status"] = "Suspicious"
-                    print(f"⚠️ Suspicious activity detected from {entry['ip']}")
+                if entry["status"] != "Blocked":
+                    entry["status"] = "Blocked"
+                    entry["blocked_at"] = datetime.now(timezone.utc).isoformat()
+                    print(f"🚫 Blocked IP due to high activity: {entry['ip']}")
                     updated = True
-            
-           
 
         if updated:
             with open("dashboard_data.json", "w") as f:
