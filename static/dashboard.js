@@ -28,7 +28,7 @@ async function fetchData() {
             <td>${new Date(entry.last_seen).toLocaleString()}</td>
             <td><span class="${getStatusClass(entry.status)}">${entry.status}</span></td>
             <td>${entry.suspicion_score || 0}</td>
-            <td>${entry.block_duration || "-"}</td>
+            <td>${entry.blocked_duration || "-"}</td>
             <td>${entry.status === "Blocked" ? `<button class="unblock-btn" onclick="unblockIP('${entry.ip}')">Unblock</button>` : "-"}</td>
         `;
 

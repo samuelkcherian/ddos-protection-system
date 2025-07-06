@@ -81,9 +81,9 @@ def data():
             print(f"[DEBUG] {entry['ip']} | status: {entry['status']} | blocked_at: {blocked_at}")
 
             if entry.get("status") == "Blocked" and blocked_at:
-                entry["block_duration"] = get_block_duration(blocked_at)
+                entry["blocked_duration"] = get_block_duration(blocked_at)
             else:
-                entry["block_duration"] = "-"
+                entry["blocked_duration"] = "-"
 
 
         return jsonify(dashboard)
