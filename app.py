@@ -77,12 +77,14 @@ def data():
             dashboard=json.load(f)
         
         for entry in dashboard:
-            if entry.get("status") == "Blocked" and entry.get("blocked_at"):
-                entry["block_duration"] = get_block_duration(entry["blocked_at"])
+            blocked_at = entry.get("blocked_at")
+            print(f"[DEBUG] {entry['ip']} | status: {entry['status']} | blocked_at: {blocked_at}")
+
+            if entry.get("status") == "Blocked" and blocked_at:
+                entry["block_duration"] = get_block_duration(blocked_at)
             else:
                 entry["block_duration"] = "-"
 
-            entry["blocked_at"] = entry.get("blocked_at", "")
 
         return jsonify(dashboard)
 
@@ -122,8 +124,11 @@ def log_data():
             entry["packet_count"] = count
             entry["last_seen"] = last_seen
             entry["status"] = status
-            if entry["status"] == "Blocked" and not entry.get("blocked_at"):
-                entry["blocked_at"] = now
+            if status == "Blocked":
+                if not entry.get("blocked_at"):
+                    entry["blocked_at"] = now
+            else:
+                entry["blocked_at"] = None
 
             if "timestamps" not in entry:
                 entry["timestamps"] = []
