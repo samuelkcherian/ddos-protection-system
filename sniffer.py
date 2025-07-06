@@ -1,17 +1,16 @@
-# sniffer.py
 from scapy.all import sniff, IP
 from ip_blocker import block_ip, load_blocked_ips
 import requests
 from datetime import datetime, timezone
 import time
 
-packet_threshold = 2
+packet_threshold = 5
 time_window = 5
 
 ip_packet_count = {}
 start_time = time.time()
 
-def report_to_dashboard(ip, packet_count, status="Safe", blocked_at=None):
+def report_to_dashboard(ip, packet_count, status="Safe"):
     timestamp = datetime.now(timezone.utc).isoformat()
     payload = {
         "ip": ip,
@@ -20,22 +19,24 @@ def report_to_dashboard(ip, packet_count, status="Safe", blocked_at=None):
         "status": status,
         "timestamp": timestamp
     }
-    if status == "Blocked" and blocked_at:
-        payload["blocked_at"] = blocked_at
 
     print(f"[DEBUG] Sending data: {payload}")
     try:
         response = requests.post("https://ddos-protection-system-6qob.onrender.com/api/log", json=payload)
-        print(f"[DEBUG] Response: {response.status_code} - {response.text.strip()}")
+        print(f"[DEBUG] Response: {response.status_code} - {response.text}")
+        if response.status_code == 204:
+            print(f"✅ Reported {ip} to live dashboard")
+        else:
+            print(f"⚠️ Failed to report {ip} - {response.status_code}: {response.text}")
     except Exception as e:
         print(f"❌ Exception during reporting: {e}")
 
 def packet_handler(pkt):
     global ip_packet_count, start_time
+
     if IP in pkt:
         src_ip = pkt[IP].src
         print(f"📦 Packet from {src_ip}")
-
         current_time = time.time()
 
         if current_time - start_time > time_window:
@@ -44,17 +45,17 @@ def packet_handler(pkt):
 
         ip_packet_count[src_ip] = ip_packet_count.get(src_ip, 0) + 1
 
-        if ip_packet_count[src_ip] > packet_threshold:
-            print(f"🚨 Blocking {src_ip}")
+        if ip_packet_count[src_ip] >= packet_threshold:
             blocked = load_blocked_ips()
             if src_ip not in blocked:
+                print(f"🚨 Blocking {src_ip}")
                 block_ip(src_ip)
-                report_to_dashboard(src_ip, ip_packet_count[src_ip], "Blocked", blocked_at=datetime.now(timezone.utc).isoformat())
+                report_to_dashboard(src_ip, ip_packet_count[src_ip], status="Blocked")
         else:
-            report_to_dashboard(src_ip, ip_packet_count[src_ip], "Safe")
+            report_to_dashboard(src_ip, ip_packet_count[src_ip], status="Safe")
 
 def start_sniffing():
-    print("🔍 Monitoring all IP traffic...")
+    print("🔍 Sniffing traffic on eth0...")
     sniff(iface="eth0", prn=packet_handler, store=0)
 
 if __name__ == "__main__":
