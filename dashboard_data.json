@@ -1,14 +1,13 @@
 [
     {
-        "ip": "123.123.123.123",
-        "last_seen": "2025-07-04T08:30:00Z",
-        "packet_count": 5,
-        "status": "Blocked",
-        "suspicion_score": 70,
+        "ip": "192.168.1.6",
+        "packet_count": 3,
+        "last_seen": "2025-07-06T08:02:42.159856+00:00",
+        "status": "Safe",
+        "suspicion_score": 0,
         "timestamps": [
-            "2025-07-04T08:25:01Z",
-            "2025-07-04T08:25:03Z"
+            "2025-07-06T08:02:42.159856+00:00"
         ],
-        "blocked_at": "2025-07-04T08:30:00Z"
+        "blocked_at": null
     }
 ]
