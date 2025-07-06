@@ -5,7 +5,7 @@ import requests
 from datetime import datetime, timezone
 import time
 
-packet_threshold = 50
+packet_threshold = 2
 time_window = 5
 
 ip_packet_count = {}
@@ -45,6 +45,7 @@ def packet_handler(pkt):
         ip_packet_count[src_ip] = ip_packet_count.get(src_ip, 0) + 1
 
         if ip_packet_count[src_ip] > packet_threshold:
+            print(f"🚨 Blocking {src_ip}")
             blocked = load_blocked_ips()
             if src_ip not in blocked:
                 block_ip(src_ip)
