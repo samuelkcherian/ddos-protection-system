@@ -177,8 +177,8 @@ def unblock():
 
     for entry in dashboard:
         if entry["ip"] == ip:
-            entry["status"] = "Safe"
-            entry["blocked_at"] = None
+            entry["status"] = "Blocked"
+            entry["blocked_at"] = datetime.now(timezone.utc).isoformat()
             break
     with open("dashboard_data.json", "w") as f:
         json.dump(dashboard, f, indent=4)
