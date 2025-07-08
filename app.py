@@ -81,7 +81,7 @@ def data():
             print(f"[DEBUG] {entry['ip']} | status: {entry['status']} | blocked_at: {blocked_at}")
 
             if entry.get("status") == "Blocked" and blocked_at:
-                entry["blocked_duration"] = get_block_duration(blocked_at) if status == "Blocked" and blocked_at else "-"
+                entry["blocked_duration"] = get_block_duration(blocked_at) if entry.get("status") == "Blocked" and blocked_at else "-"
             else:
                 entry["blocked_duration"] = "-"
 

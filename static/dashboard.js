@@ -17,7 +17,9 @@ async function fetchData() {
 
     data.forEach(entry => {
         total++;
+
         if (entry.status === "Blocked") {
+            blocked++;
             console.log(`[DEBUG JS] IP ${entry.ip} | Duration: ${entry.blocked_duration} | blocked_at: ${entry.blocked_at}`);
         }
 

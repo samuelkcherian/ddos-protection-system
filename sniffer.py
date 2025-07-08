@@ -20,6 +20,9 @@ def report_to_dashboard(ip, packet_count, status="Safe"):
         "timestamp": timestamp
     }
 
+    if status == "Blocked":
+        payload["blocked_at"] = timestamp
+
     print(f"[DEBUG] Sending data: {payload}")
     try:
         response = requests.post("https://ddos-protection-system-6qob.onrender.com/api/log", json=payload)
