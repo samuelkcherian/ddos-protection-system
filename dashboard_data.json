@@ -1,7 +1,7 @@
 [
     {
-        "ip": "192.168.1.6",
-        "packet_count":55,
+        "ip": "192.168.1.8",
+        "packet_count": 55,
         "last_seen": "2025-07-06T08:02:42.159856+00:00",
         "status": "Blocked",
         "suspicion_score": 90,

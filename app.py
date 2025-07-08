@@ -154,7 +154,11 @@ def unblock():
 
     try:
         with open("dashboard_data.json", "r") as f:
-            dashboard = json.load(f)
+            try:
+                dashboard = json.load(f)
+            except json.JSONDecodeError as e:
+                print(f"[CRITICAL] Invalid JSON in dashboard_data.json: {e}")
+                dashboard = []
     except FileNotFoundError:
         dashboard = []
 
