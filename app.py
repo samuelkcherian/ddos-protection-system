@@ -237,6 +237,6 @@ def get_block_duration(blocked_at_str):
 threading.Thread(target=analyze_traffic, daemon=True).start()
 threading.Thread(target=auto_unblock, daemon=True).start()
 
-if _name_ == "_main_":
+if _name_ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
