@@ -163,9 +163,12 @@ def unblock():
             entry["status"] = "Safe"
             entry["blocked_at"] = None
             break
+
     with open("dashboard_data.json", "w") as f:
         json.dump(dashboard, f, indent=4)
+
     return "", 204
+
 
 @app.route("/monitor", methods=["POST"])
 def monitor_domain():
