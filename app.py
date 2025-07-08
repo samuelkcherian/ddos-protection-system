@@ -62,7 +62,7 @@ def register():
         password = request.form["password"]
         users = load_users()
         if username in users:
-            return "⚠ Username already exists."
+            return "⚠️ Username already exists."
         users[username] = generate_password_hash(password)
         save_users(users)
         return redirect("/")
@@ -237,6 +237,6 @@ def get_block_duration(blocked_at_str):
 threading.Thread(target=analyze_traffic, daemon=True).start()
 threading.Thread(target=auto_unblock, daemon=True).start()
 
-if _name_ == "__main__":
+if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
