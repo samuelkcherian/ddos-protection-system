@@ -23,36 +23,40 @@ def report_to_dashboard(ip, packet_count, status="Safe"):
     print(f"[DEBUG] Sending data: {payload}")
     try:
         response = requests.post("https://ddos-protection-system-6qob.onrender.com/api/log", json=payload)
-        print(f"[DEBUG] Response: {response.status_code} - {response.text}")
+        print(f"[DEBUG] Response: {response.status_code}")
         if response.status_code == 204:
             print(f"✅ Reported {ip} to live dashboard")
         else:
-            print(f"⚠️ Failed to report {ip} - {response.status_code}: {response.text}")
+            print(f"⚠️ Failed to report {ip} - Code: {response.status_code}")
     except Exception as e:
         print(f"❌ Exception during reporting: {e}")
 
 def packet_handler(pkt):
     global ip_packet_count, start_time
+    try:
+        if IP in pkt:
+            src_ip = pkt[IP].src
+            print(f"📦 Packet from {src_ip}")
+            
+            current_time = time.time()
+            global ip_packet_count, start_time
 
-    if IP in pkt:
-        src_ip = pkt[IP].src
-        print(f"📦 Packet from {src_ip}")
-        current_time = time.time()
+            if current_time - start_time > time_window:
+                ip_packet_count = {}
+                start_time = current_time
 
-        if current_time - start_time > time_window:
-            ip_packet_count = {}
-            start_time = current_time
+            ip_packet_count[src_ip] = ip_packet_count.get(src_ip, 0) + 1
 
-        ip_packet_count[src_ip] = ip_packet_count.get(src_ip, 0) + 1
+            if ip_packet_count[src_ip] > packet_threshold:
+                blocked = load_blocked_ips()
+                if src_ip not in blocked:
+                    block_ip(src_ip)
+                    report_to_dashboard(src_ip, ip_packet_count[src_ip], status="Blocked")
+            else:
+                report_to_dashboard(src_ip, ip_packet_count[src_ip], status="Safe")
 
-        if ip_packet_count[src_ip] >= packet_threshold:
-            blocked = load_blocked_ips()
-            if src_ip not in blocked:
-                print(f"🚨 Blocking {src_ip}")
-                block_ip(src_ip)
-                report_to_dashboard(src_ip, ip_packet_count[src_ip], status="Blocked")
-        else:
-            report_to_dashboard(src_ip, ip_packet_count[src_ip], status="Safe")
+    except Exception as e:
+        print(f"❌ Error in packet_handler: {e}")
 
 def start_sniffing():
     print("🔍 Sniffing traffic on eth0...")

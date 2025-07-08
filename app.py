@@ -81,7 +81,7 @@ def data():
             print(f"[DEBUG] {entry['ip']} | status: {entry['status']} | blocked_at: {blocked_at}")
 
             if entry.get("status") == "Blocked" and blocked_at:
-                entry["blocked_duration"] = get_block_duration(blocked_at)
+                entry["blocked_duration"] = get_block_duration(blocked_at) if status == "Blocked" and blocked_at else "-"
             else:
                 entry["blocked_duration"] = "-"
 
@@ -123,7 +123,7 @@ def log_data():
             entry["last_seen"] = last_seen
             entry["status"] = status
             if status == "Blocked" and not entry.get("blocked_at"):
-                entry["blocked_at"] = blocked_at or now
+                entry["blocked_at"] = now
 
             entry.setdefault("timestamps", []).append(now)
             entry["timestamps"] = entry["timestamps"][-20:]
