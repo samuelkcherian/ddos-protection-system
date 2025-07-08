@@ -8,7 +8,7 @@ import os
 import socket
 from ip_blocker import unblock_ip
 
-app = Flask(_name_)
+app = Flask(__name__)
 app.secret_key = "your_secret_key"
 USERS_FILE = "users.json"
 DASHBOARD_FILE = "dashboard_data.json"
