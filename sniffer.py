@@ -4,7 +4,7 @@ import requests
 from datetime import datetime, timezone
 import time
 
-packet_threshold = 5
+packet_threshold = 1
 time_window = 5
 
 ip_packet_count = {}
