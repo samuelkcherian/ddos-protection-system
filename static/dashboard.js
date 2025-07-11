@@ -18,11 +18,7 @@ async function fetchData() {
     data.forEach(entry => {
         total++;
 
-        if (entry.status === "Blocked") {
-            blocked++;
-            console.log(`[DEBUG JS] IP ${entry.ip} | Duration: ${entry.blocked_duration} | blocked_at: ${entry.blocked_at}`);
-        }
-
+        if (entry.status === "Blocked") blocked++;
         if (entry.status === "Suspicious") suspicious++;
 
         const row = document.createElement("tr");
@@ -34,7 +30,7 @@ async function fetchData() {
             <td><span class="${getStatusClass(entry.status)}">${entry.status}</span></td>
             <td>${entry.suspicion_score || 0}</td>
             <td>${entry.blocked_duration || "-"}</td>
-            <td>${entry.status === "Blocked" ? `<button class="unblock-btn" onclick="unblockIP('${entry.ip}')">Unblock</button>` : "-"}</td>
+            <td>${entry.status === "Blocked" && entry.blocked_at ? getTimeUntilUnblock(entry.blocked_at) : "-"}</td>
         `;
 
         table.appendChild(row);
@@ -51,6 +47,20 @@ function getStatusClass(status) {
     return "status-safe";
 }
 
+function getTimeUntilUnblock(blocked_at) {
+    const unblockAfterSec = 300;
+    const blockedTime = new Date(blocked_at);
+    const now = new Date();
+    const elapsed = Math.floor((now - blockedTime) / 1000);
+    const remaining = unblockAfterSec - elapsed;
+
+    if (remaining <= 0) return "Unblocking...";
+
+    const minutes = Math.floor(remaining / 60);
+    const seconds = remaining % 60;
+    return `${String(minutes).padStart(2, '0')}m ${String(seconds).padStart(2, '0')}s`;
+}
+
 function timeAgo(isoTime) {
     if (!isoTime) return "-";
     const now = new Date();
@@ -63,23 +73,6 @@ function timeAgo(isoTime) {
     return then.toLocaleString();
 }
 
-// Call unblock endpoint
-async function unblockIP(ip) {
-    const confirmed = confirm(`Unblock IP ${ip}?`);
-    if (!confirmed) return;
-
-    const res = await fetch(`/unblock`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ip: ip })
-    });
-    if (res.ok) {
-        alert(`✅ ${ip} unblocked successfully.`);
-        fetchData(); // Refresh
-    } else {
-        alert(`❌ Failed to unblock ${ip}`);
-    }
-}
 
 // Auto refresh every 5s
 setInterval(fetchData, 5000);

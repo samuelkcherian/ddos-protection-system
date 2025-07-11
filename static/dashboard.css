@@ -89,19 +89,6 @@ body {
     cursor: pointer;
 }
 
-.unblock-btn {
-    padding: 4px 8px;
-    background-color: var(--primary);
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-size: 11px;
-    cursor: pointer;
-}
-
-.unblock-btn:hover {
-    background-color: #5a60e0;
-}
 
 .dashboard-title {
     font-size: 24px;
