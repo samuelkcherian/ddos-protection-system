@@ -1,3 +1,4 @@
+#sniffer.py
 from scapy.all import sniff, IP
 from ip_blocker import block_ip, load_blocked_ips
 import requests
@@ -25,14 +26,16 @@ def report_to_dashboard(ip, packet_count, status="Safe"):
 
     print(f"[DEBUG] Sending data: {payload}")
     try:
-        response = requests.post("https://ddos-protection-system-6qob.onrender.com/api/log", json=payload)
+        response = requests.post("https://ddos-protection-system-6qob.onrender.com/api/log", json=payload, timeout=5)
         print(f"[DEBUG] Response: {response.status_code}")
         if response.status_code == 204:
             print(f"✅ Reported {ip} to live dashboard")
         else:
-            print(f"⚠️ Failed to report {ip} - Code: {response.status_code}")
+            print(f"⚠️ Failed to report {ip} - Code: {response.status_code} - Body: {response.text}")
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Network error: {e}")
     except Exception as e:
-        print(f"❌ Exception during reporting: {e}")
+        print(f"❌ Unexpected error: {e}")
 
 def packet_handler(pkt):
     global ip_packet_count, start_time
@@ -42,18 +45,19 @@ def packet_handler(pkt):
             print(f"📦 Packet from {src_ip}")
             
             current_time = time.time()
-            global ip_packet_count, start_time
 
             if current_time - start_time > time_window:
                 ip_packet_count = {}
                 start_time = current_time
 
             ip_packet_count[src_ip] = ip_packet_count.get(src_ip, 0) + 1
+            blocked = load_blocked_ips()
 
             if ip_packet_count[src_ip] > packet_threshold:
-                blocked = load_blocked_ips()
                 if src_ip not in blocked:
                     block_ip(src_ip)
+                    report_to_dashboard(src_ip, ip_packet_count[src_ip], status="Blocked")
+                else:
                     report_to_dashboard(src_ip, ip_packet_count[src_ip], status="Blocked")
             else:
                 report_to_dashboard(src_ip, ip_packet_count[src_ip], status="Safe")
