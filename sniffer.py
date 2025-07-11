@@ -26,16 +26,13 @@ def report_to_dashboard(ip, packet_count, status="Safe"):
 
     print(f"[DEBUG] Sending data: {payload}")
     try:
-        response = requests.post("https://ddos-protection-system-6qob.onrender.com/api/log", json=payload, timeout=5)
-        print(f"[DEBUG] Response: {response.status_code}")
+        response = requests.post("https://ddos-protection-system-6qob.onrender.com/api/log", json=payload)
         if response.status_code == 204:
             print(f"✅ Reported {ip} to live dashboard")
         else:
-            print(f"⚠️ Failed to report {ip} - Code: {response.status_code} - Body: {response.text}")
-    except requests.exceptions.RequestException as e:
-        print(f"❌ Network error: {e}")
+            print(f"⚠️ Failed to report {ip} - Code: {response.status_code} | Content: {response.text}")
     except Exception as e:
-        print(f"❌ Unexpected error: {e}")
+        print(f"❌ Exception during reporting: {e}")
 
 def packet_handler(pkt):
     global ip_packet_count, start_time
@@ -66,7 +63,7 @@ def packet_handler(pkt):
         print(f"❌ Error in packet_handler: {e}")
 
 def start_sniffing():
-    print("🔍 Sniffing traffic on eth0...")
+    print("🔍 Monitoring All IP traffic....")
     sniff(iface="eth0", prn=packet_handler, store=0)
 
 if __name__ == "__main__":
