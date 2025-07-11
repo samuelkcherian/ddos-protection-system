@@ -24,14 +24,18 @@ def report_to_dashboard(ip, packet_count, status="Safe"):
     if status == "Blocked":
         payload["blocked_at"] = timestamp
 
-    print(f"📤 Sending data for {ip}: {payload}")
+    print(f"📤 [REPORT] {ip} -> {status}, Count: {packet_count}")
     try:
-        response = requests.post("https://ddos-protection-system-6qob.onrender.com/api/log", json=payload)
-        print(f"✅ Response status: {response.status_code}")
+        response = requests.post(
+            "https://ddos-protection-system-6qob.onrender.com/api/log",
+            json=payload,
+            timeout=5
+        )
+        print(f"✅ [POST] Status code: {response.status_code}")
         if response.status_code != 204:
             print(f"⚠️ Unexpected response: {response.text}")
-    except Exception as e:
-        print(f"❌ Exception in report_to_dashboard: {e}")
+    except requests.exceptions.RequestException as e:
+        print(f"❌ [Network error] Failed to send data: {e}")
 
 
 def packet_handler(pkt):
@@ -48,16 +52,16 @@ def packet_handler(pkt):
                 start_time = current_time
 
             ip_packet_count[src_ip] = ip_packet_count.get(src_ip, 0) + 1
+            count = ip_packet_count[src_ip]
             blocked = load_blocked_ips()
 
-            if ip_packet_count[src_ip] > packet_threshold:
+            if count > packet_threshold:
                 if src_ip not in blocked:
                     block_ip(src_ip)
-                    report_to_dashboard(src_ip, ip_packet_count[src_ip], status="Blocked")
-                else:
-                    report_to_dashboard(src_ip, ip_packet_count[src_ip], status="Blocked")
+                report_to_dashboard(src_ip, count, status="Blocked")
+
             else:
-                report_to_dashboard(src_ip, ip_packet_count[src_ip], status="Safe")
+                report_to_dashboard(src_ip, count, status="Safe")
 
     except Exception as e:
         print(f"❌ Error in packet_handler: {e}")
