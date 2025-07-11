@@ -95,8 +95,14 @@ def data():
 @app.route("/api/log", methods=["POST"])
 def log_data():
     if not request.is_json:
+        print("⚠️ Non-JSON request received.")
         return abort(400, description="Invalid data format.")
-    data = request.get_json()
+    try:
+        data = request.get_json()
+        print(f"[DEBUG] Received: {data}")
+    except Exception as e:
+        print(f"❌ Failed to parse JSON: {e}")
+        return abort(400, description="Malformed JSON")
     try:
         ip = data["ip"]
         count = data["packet_count"]

@@ -24,15 +24,15 @@ def report_to_dashboard(ip, packet_count, status="Safe"):
     if status == "Blocked":
         payload["blocked_at"] = timestamp
 
-    print(f"[DEBUG] Sending data: {payload}")
+    print(f"📤 Sending data for {ip}: {payload}")
     try:
         response = requests.post("https://ddos-protection-system-6qob.onrender.com/api/log", json=payload)
-        if response.status_code == 204:
-            print(f"✅ Reported {ip} to live dashboard")
-        else:
-            print(f"⚠️ Failed to report {ip} - Code: {response.status_code} | Content: {response.text}")
+        print(f"✅ Response status: {response.status_code}")
+        if response.status_code != 204:
+            print(f"⚠️ Unexpected response: {response.text}")
     except Exception as e:
-        print(f"❌ Exception during reporting: {e}")
+        print(f"❌ Exception in report_to_dashboard: {e}")
+
 
 def packet_handler(pkt):
     global ip_packet_count, start_time
