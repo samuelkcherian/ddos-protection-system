@@ -179,6 +179,22 @@ def monitor_domain():
     save_json_safely(DASHBOARD_FILE, dashboard)
     return jsonify({"message": f"Monitoring {domain}", "ip": resolved_ip})
 
+def load_json_safely(DASHBOARD_FILE):
+    try:
+        with open(DASHBOARD_FILE, "r") as f:
+            data = json.load(f)
+            if not isinstance(data, list):
+                print("[ERROR] dashboard_data.json is not a list, resetting.")
+                return []
+            return data
+    except json.JSONDecodeError as e:
+        print(f"[ERROR] Failed to load {DASHBOARD_FILE}: {e}")
+        return []
+    except Exception as e:
+        print(f"[ERROR] Unexpected error loading {DASHBOARD_FILE}: {e}")
+        return []
+
+
 # Background Threads
 def calculate_suspicion_score(entry):
     timestamps = entry.get("timestamps", [])
