@@ -24,8 +24,9 @@ def report_to_dashboard(ip, packet_count, status="Safe"):
         payload["blocked_at"] = timestamp
 
     try:
-        requests.post("https://ddos-protection-system-6qob.onrender.com/api/log", json=payload)
-        print(f"✅ Sent report for {ip} - {status}")
+        response = requests.post("https://ddos-protection-system-6qob.onrender.com/api/log", json=payload)
+        print(f"✅ Response status: {response.status_code}")
+        print(f"📩 Response content: {response.text}") 
     except Exception as e:
         print(f"❌ Failed to report {ip}: {e}")
 
