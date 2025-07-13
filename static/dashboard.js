@@ -27,10 +27,10 @@ async function fetchData() {
             <td>${entry.ip}</td>
             <td>${entry.packet_count}</td>
             <td>${new Date(entry.last_seen).toLocaleString()}</td>
-            <td><span class="${getStatusClass(entry.status)}">${entry.status}</span></td>
+            <td><span class="${getStatusClass(entry.status)}">${entry.status}${unblockCountdown ? ` - ${unblockCountdown}` : ''}</span></td>
             <td>${entry.suspicion_score || 0}</td>
             <td>${entry.blocked_duration || "-"}</td>
-            <td>${entry.status === "Blocked" && entry.blocked_at ? getTimeUntilUnblock(entry.blocked_at) : "-"}</td>
+            <td>-</td>
         `;
 
         table.appendChild(row);
@@ -47,18 +47,18 @@ function getStatusClass(status) {
     return "status-safe";
 }
 
-function getTimeUntilUnblock(blocked_at) {
-    const unblockAfterSec = 300;
-    const blockedTime = new Date(blocked_at);
-    const now = new Date();
-    const elapsed = Math.floor((now - blockedTime) / 1000);
-    const remaining = unblockAfterSec - elapsed;
+function getUnblockCountdown(blockedAt) {
+    if (!blockedAt) return null;
+    const unblockTime = new Date(blockedAt).getTime() + 10 * 60 * 1000; // 10 minutes later
+    const now = Date.now();
+    const remaining = unblockTime - now;
 
-    if (remaining <= 0) return "Unblocking...";
+    if (remaining <= 0) return null;
 
-    const minutes = Math.floor(remaining / 60);
-    const seconds = remaining % 60;
-    return `${String(minutes).padStart(2, '0')}m ${String(seconds).padStart(2, '0')}s`;
+    const minutes = Math.floor(remaining / 60000);
+    const seconds = Math.floor((remaining % 60000) / 1000);
+
+    return `Unblocks in ${minutes}m ${seconds}s`;
 }
 
 function timeAgo(isoTime) {
