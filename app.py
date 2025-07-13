@@ -17,13 +17,15 @@ DASHBOARD_FILE = "dashboard_data.json"
 def load_json_safely(DASHBOARD_FILE):
     try:
         with open(DASHBOARD_FILE, "r") as f:
-            data = json.load(f)
-            if not isinstance(data, list):
-                print(f"[ERROR] {DASHBOARD_FILE} is not a list.")
+            content = f.read().strip()
+            if not content:
                 return []
-            return data
-    except Exception as e:
+            return json.loads(content)
+    except json.JSONDecodeError as e:
         print(f"[ERROR] Failed to load {DASHBOARD_FILE}: {e}")
+        return []
+    except Exception as e:
+        print(f"[ERROR] Unexpected error loading {DASHBOARD_FILE}: {e}")
         return []
 
 def save_json_safely(DASHBOARD_FILE, data):
