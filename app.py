@@ -99,6 +99,7 @@ def data():
         else:
             entry["blocked_duration"] = "-"
     return jsonify(dashboard)
+    print(f"[DEBUG] Returning {len(dashboard)} entries from /data")
 
 @app.route("/api/log", methods=["POST"])
 def log_data():
