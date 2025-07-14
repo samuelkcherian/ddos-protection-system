@@ -11,11 +11,11 @@
     },
     {
         "ip": "192.168.1.4",
-        "status": "Blocked",
+        "status": "Safe",
         "packet_count": 10,
         "last_seen": "2025-07-11T00:40:22.137000+00:00",
         "suspicion_score": 40,
-        "blocked_at": "2025-07-11T00:40:22.137000+00:00",
+        "blocked_at": null,
         "timestamps": [
             "2025-07-11T00:40:22.137000+00:00"
         ]
